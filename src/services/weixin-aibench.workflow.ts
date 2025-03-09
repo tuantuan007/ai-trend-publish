@@ -1,28 +1,36 @@
 import { Workflow } from "./interfaces/workflow.interface";
 import { LiveBenchAPI } from "../api/livebench.api";
-import { ConfigManager } from "../utils/config/config-manager";
-import { BarkNotifier } from "../utils/bark.notify";
-import { AIBenchRenderer } from "../render/aibench/renderer";
-import { WeixinPublisher } from "../publishers/weixin.publisher";
-import path from "path";
+import { AIBenchTemplateRenderer } from "@src/modules/render";
+import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher";
+import { CategoryData, ModelScore } from "@src/modules/render/interfaces/aibench.type";
+import { PDD920LogoGenerator } from "@src/providers/image-gen/pdd920-logo";
+import { BarkNotifier } from "@src/modules/notify/bark.notify";
+import { ImageGeneratorFactory } from "@src/providers/image-gen/image-generator-factory";
 
 export class WeixinAIBenchWorkflow implements Workflow {
   private liveBenchAPI: LiveBenchAPI;
-  private renderer: AIBenchRenderer;
+  private renderer: AIBenchTemplateRenderer;
   private notify: BarkNotifier;
   private publisher: WeixinPublisher;
 
   constructor() {
     this.liveBenchAPI = new LiveBenchAPI();
-    this.renderer = new AIBenchRenderer();
+    this.renderer = new AIBenchTemplateRenderer();
     this.notify = new BarkNotifier();
     this.publisher = new WeixinPublisher();
   }
 
-  async refresh(): Promise<void> {
-    await this.notify.refresh();
-    await this.liveBenchAPI.refresh();
-    await this.publisher.refresh();
+  async generateCoverImage(title: string): Promise<string> {
+    // 生成封面图并获取URL
+    const imageGenerator = await ImageGeneratorFactory.getInstance().getGenerator("PDD920_LOGO");
+    const imageResult = await imageGenerator.generate({
+      t: "@AISPACE科技空间",
+      text: title,
+      type: "json"
+    });
+
+    // 由于type为json，imageResult一定是包含url的对象
+    return imageResult as string;
   }
 
   async process(): Promise<void> {
@@ -30,34 +38,38 @@ export class WeixinAIBenchWorkflow implements Workflow {
       // 获取所有模型的性能数据
       const modelData = await this.liveBenchAPI.getModelPerformance();
 
-      // 处理数据，清理模型名称中的多余空格
-      const cleanedModelData: typeof modelData = Object.entries(
-        modelData
-      ).reduce((acc, [key, value]) => {
-        acc[key.trim()] = {
-          ...value,
-          organization: value.organization?.trim(),
-        };
-        return acc;
-      }, {} as typeof modelData);
+      console.log('modelData:', modelData);
 
-      // 使用 AIBenchRenderer 处理数据
-      const templateData = AIBenchRenderer.render(cleanedModelData);
+      // 找出性能最好的模型
+      const topModel = Object.entries(modelData)
+        .sort((a, b) => b[1].metrics["Global Average"] - a[1].metrics["Global Average"])[0];
+      const topModelName = topModel[0];
+      const topModelOrg = topModel[1].organization || '未知机构';
 
-      // 渲染并保存文件
-      const outputPath = path.join(
-        "output",
-        `aibench-${new Date().toISOString().split("T")[0]}.html`
-      );
-      await this.renderer.renderToFile(templateData, outputPath);
+      // 准备模板数据
+      const templateData = {
+        title: `${topModelName}领跑！AI模型性能榜单 - ${new Date().toLocaleDateString()}`,
+        updateTime: new Date().toISOString(),
+        categories: [] as CategoryData[],
+        globalTop10: [] as ModelScore[],
+      };
+      // 将modelData转换为AIBenchTemplate格式
+      const formattedData = this.renderer.transformData(modelData);
+
+      // 准备分类数据
+      templateData.categories = formattedData.categories;
+
+      // 准备全局排名前10的数据
+      templateData.globalTop10 = formattedData.globalTop10.slice(0, 10);
+
+      // 渲染内容
+      const htmlContent = await this.renderer.render(templateData);
 
       // 发布到微信公众号
-      const title = `${new Date().toLocaleDateString()} AI模型性能榜单`;
-      const mediaId =
-        "SwCSRjrdGJNaWioRQUHzgF8cSi0Wuf1M6duNPIMX9ennpaMqttRXYwwXnZjmi6QI";
-
-      // 使用微信专用模板渲染内容
-      const htmlContent = this.renderer.renderForWeixin(templateData);
+      const title = `${topModelName}领跑！${new Date().toLocaleDateString()} AI模型性能榜单`;
+      const imageTitle = `本周大模型排行 ${topModelOrg}旗下大模型登顶`;
+      const imageUrl = await this.generateCoverImage(imageTitle);
+      const mediaId = await this.publisher.uploadImage(imageUrl);
 
       const publishResult = await this.publisher.publish(
         htmlContent,
@@ -67,6 +79,7 @@ export class WeixinAIBenchWorkflow implements Workflow {
       );
 
       // 发送通知
+      console.log("publishResult:", publishResult);
       await this.notify.info(
         "AI Benchmark更新",
         `已生成并发布最新的AI模型性能榜单\n发布状态: ${publishResult.status}`

@@ -1,35 +1,30 @@
-import {
-  ContentScraper,
-  ScrapedContent,
-} from "../scrapers/interfaces/scraper.interface";
-import { ContentSummarizer } from "../summarizer/interfaces/summarizer.interface";
-import { ContentPublisher } from "../publishers/interfaces/publisher.interface";
-import { WeixinPublisher } from "../publishers/weixin.publisher";
-import { DeepseekAISummarizer } from "../summarizer/deepseek-ai.summarizer";
-import { BarkNotifier } from "../utils/bark.notify";
-import dotenv from "dotenv";
-import { TwitterScraper } from "../scrapers/twitter.scraper";
-import { FireCrawlScraper } from "../scrapers/fireCrawl.scraper";
-import { getCronSources } from "../data-sources/getCronSources";
-import cliProgress from "cli-progress";
-import { WeixinTemplate } from "../render/interfaces/template.interface";
-import { WeixinTemplateRenderer } from "../render/weixin/renderer";
-import { AliWanX21ImageGenerator } from "../utils/gen-image/aliwanx2.1.image";
 import { DeepseekAPI } from "../api/deepseek.api";
-import { ContentRanker, RankResult } from "../utils/content-rank/content-ranker";
-import { QianwenAISummarizer } from "../summarizer/qianwen-ai.summarizer";
-import { ConfigManager } from "../utils/config/config-manager";
-
-dotenv.config();
+import { getCronSources } from "@src/data-sources/getCronSources";
+import { ContentRanker } from "@src/modules/content-rank/ai.content-ranker";
+import { RankResult } from "@src/modules/interfaces/content-ranker.interface";
+import { ContentPublisher } from "@src/modules/interfaces/publisher.interface";
+import { ContentScraper, ScrapedContent } from "@src/modules/interfaces/scraper.interface";
+import { ContentSummarizer } from "@src/modules/interfaces/summarizer.interface";
+import { BarkNotifier } from "@src/modules/notify/bark.notify";
+import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher";
+import { WeixinTemplate } from "@src/modules/render/interfaces/template.type";
+import { ArticleTemplateRenderer } from "@src/modules/render";
+import { FireCrawlScraper } from "@src/modules/scrapers/fireCrawl.scraper";
+import { TwitterScraper } from "@src/modules/scrapers/twitter.scraper";
+import { AISummarizer } from "@src/modules/summarizer/ai.summarizer";
+import { AliWanX21ImageGenerator } from "@src/providers/image-gen/aliyun/aliwanx2.1.image";
+import cliProgress from "cli-progress";
+import { ImageGeneratorFactory } from "@src/providers/image-gen/image-generator-factory";
 
 export class WeixinWorkflow {
   private scraper: Map<string, ContentScraper>;
   private summarizer: ContentSummarizer;
   private publisher: ContentPublisher;
   private notifier: BarkNotifier;
-  private renderer: WeixinTemplateRenderer;
+  private renderer: ArticleTemplateRenderer;
   private imageGenerator: AliWanX21ImageGenerator;
   private deepSeekClient: DeepseekAPI;
+  private contentRanker: ContentRanker;
   private stats = {
     success: 0,
     failed: 0,
@@ -40,23 +35,15 @@ export class WeixinWorkflow {
     this.scraper = new Map<string, ContentScraper>();
     this.scraper.set("fireCrawl", new FireCrawlScraper());
     this.scraper.set("twitter", new TwitterScraper());
-    this.summarizer = new QianwenAISummarizer();
+    this.summarizer = new AISummarizer();
     this.publisher = new WeixinPublisher();
     this.notifier = new BarkNotifier();
-    this.renderer = new WeixinTemplateRenderer();
+    this.renderer = new ArticleTemplateRenderer();
     this.imageGenerator = new AliWanX21ImageGenerator();
     this.deepSeekClient = new DeepseekAPI();
+    this.contentRanker = new ContentRanker();
   }
 
-  async refresh(): Promise<void> {
-    await this.notifier.refresh();
-    await this.summarizer.refresh();
-    await this.publisher.refresh();
-    await this.scraper.get("fireCrawl")?.refresh();
-    await this.scraper.get("twitter")?.refresh();
-    await this.imageGenerator.refresh();
-    await this.deepSeekClient.refresh();
-  }
 
   private async scrapeSource(
     type: string,
@@ -85,7 +72,6 @@ export class WeixinWorkflow {
       const summary = await this.summarizer.summarize(JSON.stringify(content));
       content.title = summary.title;
       content.content = summary.content;
-      content.score = summary.score;
       content.metadata.keywords = summary.keywords;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -171,14 +157,7 @@ export class WeixinWorkflow {
       console.log(`[内容排序] 开始排序 ${allContents.length} 条内容`);
       let rankedContents: RankResult[] = [];
       try {
-        const configManager = ConfigManager.getInstance();
-        const ranker = new ContentRanker({
-          provider: "deepseek",
-          apiKey: await configManager.get("DEEPSEEK_API_KEY") as string,
-          modelName: "deepseek-reasoner"
-        });
-        rankedContents = await ranker.rankContents(allContents);
-
+        rankedContents = await this.contentRanker.rankContents(allContents);
         console.log("内容排序完成", rankedContents);
       } catch (error) {
         console.error("内容排序失败:", error);
@@ -241,6 +220,7 @@ export class WeixinWorkflow {
       const summaryTitle = await this.summarizer.generateTitle(
         allContents.map((content) => content.title).join(" | ")
       ).then((title) => {
+        title = `${new Date().toLocaleDateString()} AI速递 | ${title}`
         // 限制标题长度 为 64 个字符
         return title.slice(0, 64);
       });
@@ -248,28 +228,24 @@ export class WeixinWorkflow {
       console.log(`[标题生成] 生成标题: ${summaryTitle}`);
 
       // 生成封面图片
-      const taskId = await this.imageGenerator
-        .generateImage("AI新闻日报的封面", "1440*768")
-        .then((res) => res.output.task_id);
-      console.log(`[封面图片] 封面图片生成任务ID: ${taskId}`);
-      const imageUrl = await this.imageGenerator
-        .waitForCompletion(taskId)
-        .then((res) => res.results?.[0]?.url)
-        .then((url) => {
-          if (!url) {
-            return "";
-          }
-          return url;
-        });
+      const imageGenerator = await ImageGeneratorFactory.getInstance().getGenerator("ALIWANX_POSTER");
+      const imageUrl = await imageGenerator.generate({
+        title: summaryTitle.split(" | ")[1].trim().slice(0, 30),
+        sub_title: new Date().toLocaleDateString() + " AI速递",
+        prompt_text_zh: `科技前沿资讯 | 人工智能新闻 | 每日AI快报 - ${summaryTitle.split(" | ")[1].trim().slice(0, 30)}`,
+        generate_mode: "generate",
+        generate_num: 1,
+        creative_title_layout: true,
+      });
 
       // 上传封面图片
       const mediaId = await this.publisher.uploadImage(imageUrl);
 
-      const renderedTemplate = this.renderer.render(templateData);
+      const renderedTemplate = await this.renderer.render(templateData);
       console.log("[发布] 发布到微信公众号");
       const publishResult = await this.publisher.publish(
         renderedTemplate,
-        `${new Date().toLocaleDateString()} AI速递 | ${summaryTitle}`,
+        summaryTitle,
         summaryTitle,
         mediaId
       );

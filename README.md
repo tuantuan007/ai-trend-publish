@@ -33,28 +33,17 @@
   - 任务执行状态通知
   - 错误告警
 
-## 多种模板可选
+## 📝 文章模板
 
-<div style="display: flex; justify-content: space-between; margin: 20px 0;">
-  <div style="text-align: center; flex: 1;">
-    <img src="https://oss.liuyaowen.cn/images/202503051143589.png" alt="base模板" width="300" style="border-radius: 8px;">
-    <div style="margin-top: 10px;">base</div>
-  </div>
-  <div style="text-align: center; flex: 1;">
-    <img src="https://oss.liuyaowen.cn/images/202503051144321.png" alt="modern模板" width="300" style="border-radius: 8px;">
-    <div style="margin-top: 10px;">modern</div>
-  </div>
-  <div style="text-align: center; flex: 1;">
-    <img src="https://oss.liuyaowen.cn/images/202503051144824.png" alt="tech模板" width="300" style="border-radius: 8px;">
-    <div style="margin-top: 10px;">tech</div>
-  </div>
-</div>
-
+TrendPublish 提供了多种精美的文章模板。查看 [模板展示页面](https://openaispace.github.io/ai-trend-publish/templates.html) 了解更多详情。
 
 ## DONE
 - [x] 微信公众号文章发布
 - [x] 大模型每周排行榜
 - [x] 热门AI相关仓库推荐
+- [x] 添加通义千问（Qwen）支持
+- [x] 支持多模型配置（如 DEEPSEEK_MODEL="deepseek-chat|deepseek-reasoner"）
+- [x] 支持指定特定模型（如 AI_CONTENT_RANKER_LLM_PROVIDER="DEEPSEEK:deepseek-reasoner"）
 
 ## Todo
 - [ ] 热门AI相关论文推荐
@@ -119,55 +108,93 @@ cp .env.example .env
 在 `.env` 文件中配置以下必要的环境变量：
 
 ```bash
-如果需要使用数据库配置（先从数据库查找配置key，然后再env寻找）：
-ENABLE_DB=false
-DB_HOST=xxxx
-DB_PORT=xxxx
-DB_USER=xxxx
-DB_PASSWORD=xxxx
-DB_DATABASE=xxxx
+# ===================================
+# 基础服务配置
+# ===================================
 
+# LLM 服务配置
 
-微信文章获取的必备环境：
+# OpenAI API配置
+OPENAI_BASE_URL="https://api.openai.com/v1"
+OPENAI_API_KEY="your_api_key"
+OPENAI_MODEL="gpt-3.5-turbo"
 
-# DeepseekAI API 配置 https://api-docs.deepseek.com/ 获取
-DEEPSEEK_API_KEY=your_api_key
+# DeepseekAI API配置 https://api-docs.deepseek.com/
+DEEPSEEK_BASE_URL="https://api.deepseek.com/v1"
+DEEPSEEK_API_KEY="your_api_key"
+# 支持配置多个模型，使用 | 分隔
+DEEPSEEK_MODEL="deepseek-chat|deepseek-reasoner"
 
-# FireCrawl 配置 https://www.firecrawl.dev/ 获取
-FIRE_CRAWL_API_KEY=your_api_key
+# 讯飞API配置 https://www.xfyun.cn/
+XUNFEI_API_KEY="your_api_key"
 
-# Twitter API 配置  https://twitterapi.io/ 获取
-X_API_BEARER_TOKEN=your_api_key
+# 通义千问API配置 https://help.aliyun.com/zh/dashscope/developer-reference/api-details
+QWEN_BASE_URL="https://dashscope.aliyuncs.com/api/v1"
+QWEN_API_KEY="your_api_key"
+QWEN_MODEL="qwen-max"
 
-# 千问 https://bailian.console.aliyun.com/ 获取
-DASHSCOPE_API_KEY=your_api_key
+# 自定义LLM API配置（需要兼容OpenAI API格式）
+CUSTOM_LLM_BASE_URL="your_api_base_url"
+CUSTOM_LLM_API_KEY="your_api_key"
+CUSTOM_LLM_MODEL="your_model_name"
+
+# 默认使用的LLM提供者
+# 可选值: OPENAI | DEEPSEEK | XUNFEI | QWEN | CUSTOM
+# 也可以指定具体模型，格式为 "提供者:模型名称"，例如 "DEEPSEEK:deepseek-reasoner"
+DEFAULT_LLM_PROVIDER="DEEPSEEK"
+
+# ===================================
+# 模块功能配置
+# ===================================
+
+# 注意：使用以下配置前，请确保已在上方正确配置了对应的 LLM 服务参数
+# 内容排名和摘要模块LLM提供者配置
+# 可选值: OPENAI | DEEPSEEK | XUNFEI | QWEN | CUSTOM
+# 也可以指定具体模型，格式为 "提供者:模型名称"，例如 "DEEPSEEK:deepseek-reasoner"
+AI_CONTENT_RANKER_LLM_PROVIDER="DEEPSEEK:deepseek-reasoner"
+AI_SUMMARIZER_LLM_PROVIDER="DEEPSEEK"
+
+# 模板配置
+# 文章模板类型配置，可选值: default | modern | tech | mianpro | random
+ARTICLE_TEMPLATE_TYPE="default"
+
+# HelloGitHub模板类型配置，可选值: weixin | random
+HELLOGITHUB_TEMPLATE_TYPE="default"
+
+# AIBench模板类型配置，可选值: default | random
+AIBENCH_TEMPLATE_TYPE="default"
+
+# 数据存储配置
+ENABLE_DB=true
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=password
+DB_DATABASE=trendfinder
 
 # 微信公众号配置
-WEIXIN_APP_ID=your_app_id
-WEIXIN_APP_SECRET=your_app_secret
+WEIXIN_APP_ID="your_app_id"
+WEIXIN_APP_SECRET="your_app_secret"
 
-# 微信文章发布配置
-
-# 是否开启评论
+# 微信文章配置
 NEED_OPEN_COMMENT=false
-
-# 是否开启赞赏
 ONLY_FANS_CAN_COMMENT=false
+AUTHOR="your_name"
 
-# 文章作者
-AUTHOR=your_name
+# 数据抓取配置
+# FireCrawl配置 https://www.firecrawl.dev/
+FIRE_CRAWL_API_KEY="your_api_key"
 
+# Twitter API配置 https://twitterapi.io/
+X_API_BEARER_TOKEN="your_api_key"
 
-#可选环境:
+# ===================================
+# 其他通用配置
+# ===================================
 
-# Bark 通知配置
-ENABLE_DB=false
-BARK_URL=your_url
-
-# 获取图片 API 配置 https://getimg.cc/ 获取
-GETIMG_API_KEY=your_api_key
-
-TOGETHER_API_KEY=your_api_key
+# 通知服务配置
+ENABLE_BARK=false
+BARK_URL="your_key"
 
 ```
 
@@ -245,12 +272,8 @@ docker run -d --env-file .env --name ai-trend-publsih-container ai-trend-publsih
 
 # 方式2：直接指定环境变量运行
 docker run -d \
-  -e DEEPSEEK_API_KEY=your_api_key \
-  -e FIRE_CRAWL_API_KEY=your_api_key \
-  -e X_API_BEARER_TOKEN=your_api_key \
-  -e DASHSCOPE_API_KEY=your_api_key \
-  -e WEIXIN_APP_ID=your_app_id \
-  -e WEIXIN_APP_SECRET=your_app_secret \
+  -e XXXX=XXXX \
+  ...其他环境变量... \
   --name ai-trend-publsih-container \
   ai-trend-publsih
 ```
@@ -267,8 +290,27 @@ docker run -d \
    - `SSH_PRIVATE_KEY`: SSH 私钥
    - 其他必要的环境变量（参考 .env.example）
 
+## 模板开发指南
 
+本项目支持自定义模板开发，主要包含以下几个部分：
 
+### 1. 了解数据结构
+
+查看 `src/modules/render/interfaces` 目录下的类型定义文件，了解各个渲染模块需要的数据结构
+
+### 2. 开发模板
+
+在 `src/templates` 目录下按照对应模块开发 EJS 模板
+
+### 3. 注册模板
+
+在对应的渲染器类中注册新模板，如 `ArticleTemplateRenderer`：
+
+### 4. 测试渲染效果
+
+```
+npx ts-node -r tsconfig-paths/register src\modules\render\test\test.weixin.template.ts
+```
 
 ## 🤝 贡献指南
 

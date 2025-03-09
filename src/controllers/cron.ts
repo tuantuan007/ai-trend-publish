@@ -43,7 +43,6 @@ export const startCronJobs = async () => {
       if (workflow) {
         console.log(`开始执行周${adjustedDay}的工作流...`);
         try {
-          await workflow.refresh();
           await workflow.process();
         } catch (error) {
           console.error(`工作流执行失败:`, error);

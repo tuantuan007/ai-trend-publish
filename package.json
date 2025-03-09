@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "scripts": {
-    "start": "nodemon src/index.ts",
-    "build": "tsc && npm run copy-templates",
-    "test": "nodemon src/test.ts",
+    "start": "nodemon -r tsconfig-paths/register src/index.ts",
+    "build": "tsc && tsc-alias && npm run copy-templates",
+    "test": "nodemon -r tsconfig-paths/register src/test.ts",
     "copy-templates": "copyfiles -u 1 \"src/templates/**/*\" dist"
   },
   "author": "",
@@ -22,6 +22,8 @@
     "rimraf": "^5.0.5",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.1",
+    "tsc-alias": "^1.8.11",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.2"
   },
   "dependencies": {

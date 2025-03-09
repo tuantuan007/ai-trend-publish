@@ -12,11 +12,9 @@ async function bootstrap() {
 
   const weixinWorkflow = new WeixinWorkflow();
 
-  await weixinWorkflow.refresh();
   await weixinWorkflow.process();
 
   // const weixinAIBenchWorkflow = new WeixinAIBenchWorkflow();
-  // await weixinAIBenchWorkflow.refresh();
   // await weixinAIBenchWorkflow.process();
 
   // const weixinHelloGithubWorkflow = new WeixinHelloGithubWorkflow();

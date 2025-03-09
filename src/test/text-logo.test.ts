@@ -1,4 +1,4 @@
-import { TextLogoGenerator } from "../utils/gen-image/text-logo";
+import { TextLogoGenerator } from "../providers/image-gen/text-logo";
 import path from "path";
 
 async function testTextLogo() {

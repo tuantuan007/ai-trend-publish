@@ -1,4 +1,4 @@
-import { HelloGithubScraper } from "../scrapers/hellogithub.scraper";
+import { HelloGithubScraper } from "../modules/scrapers/hellogithub.scraper";
 
 async function testScraper() {
   console.log("开始测试 HelloGithubScraper...");
