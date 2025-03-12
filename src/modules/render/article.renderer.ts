@@ -2,6 +2,10 @@ import path from "path";
 import fs from "fs";
 import { BaseTemplateRenderer } from "./base.renderer";
 import { WeixinTemplate } from "./interfaces/article.type";
+import ejs from "ejs";
+import { log } from "console";
+import { WeixinImageProcessor } from "@src/utils/image/image-processor";
+import { WeixinPublisher } from "../publishers/weixin.publisher";
 
 /**
  * 文章模板渲染器
@@ -71,17 +75,28 @@ export class WeixinArticleTemplateRenderer extends BaseTemplateRenderer<WeixinTe
     }
 
     /**
-     * 重写render方法，添加预处理步骤
+     * 实现doRender方法，添加预处理步骤
      */
-    public async render(
-        data: WeixinTemplate[],
-        preProcess?: (data: WeixinTemplate[]) => Promise<WeixinTemplate[]>,
-        templateType?: string,
-    ): Promise<string> {
+    public async doRender(data: WeixinTemplate[], template: string): Promise<string> {
+        const imageProcessor = new WeixinImageProcessor(new WeixinPublisher());
         // 预处理每篇文章 插入图片到段落之间
+        console.log(`WeixinArticleTemplateRenderer doRender: ${data.length} articles`);
         const processedData = data.map(article => this.processArticleContent(article));
 
-        // 调用父类的render方法
-        return super.render(processedData, preProcess, templateType);
+
+        // 将图片上传到微信 并替换图片url
+        for (const article of processedData) {
+            const { content, results } = await imageProcessor.processContent(article.content);
+            article.content = content;
+            console.log(results);
+        }
+
+        return ejs.render(
+            template,
+            {
+                articles: processedData,
+            },
+            { rmWhitespace: true }
+        );
     }
 }

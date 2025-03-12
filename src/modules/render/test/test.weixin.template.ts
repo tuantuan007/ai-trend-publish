@@ -7,6 +7,16 @@ import { ConfigManager } from "@src/utils/config/config-manager";
 import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher";
 import { WeixinArticleTemplateRenderer } from "../article.renderer";
 import { WeixinImageProcessor } from "@src/utils/image/image-processor";
+
+
+const originalConsoleLog = console.log;
+
+function formatLog(message: any) {
+  originalConsoleLog(`[${new Date().toLocaleString()}]`, message);
+}
+
+console.log = formatLog;
+
 // 生成示例HTML预览
 const previewArticles: WeixinTemplate[] = [
   {
@@ -78,14 +88,7 @@ async function renderAndSavePreview() {
   const weixinPublisher = new WeixinPublisher();
   const renderer = new WeixinArticleTemplateRenderer();
   const imageProcessor = new WeixinImageProcessor(weixinPublisher);
-  const html = await renderer.render(previewArticles, async (data) => {
-    for (const article of data) {
-      const { content, results } = await imageProcessor.processContent(article.content);
-      article.content = content;
-      console.log(results);
-    }
-    return data;
-  }, "default");
+  const html = await renderer.render(previewArticles, "default");
 
   // 确保temp目录存在
   const tempDir = path.join(__dirname, "../../../temp");
@@ -94,28 +97,28 @@ async function renderAndSavePreview() {
   }
 
 
-  //上传到微信草稿箱
-  async function uploadToDraft() {
-    const configManager = ConfigManager.getInstance();
-    configManager.initDefaultConfigSources();
+  // //上传到微信草稿箱
+  // async function uploadToDraft() {
+  //   const configManager = ConfigManager.getInstance();
+  //   configManager.initDefaultConfigSources();
 
 
-    const weixinPublish = new WeixinPublisher()
+  //   const weixinPublish = new WeixinPublisher()
 
-    await weixinPublish.refresh()
+  //   await weixinPublish.refresh()
 
-    const publishResult = await weixinPublish.publish(
-      html,
-      `${new Date().toLocaleDateString()} AI速递 | Test`,
-      "Test",
-      "SwCSRjrdGJNaWioRQUHzgF68BHFkSlb_f5xlTquvsOSA6Yy0ZRjFo0aW9eS3JJu_"
-    );
-    return publishResult;
-  }
+  //   const publishResult = await weixinPublish.publish(
+  //     html,
+  //     `${new Date().toLocaleDateString()} AI速递 | Test`,
+  //     "Test",
+  //     "SwCSRjrdGJNaWioRQUHzgF68BHFkSlb_f5xlTquvsOSA6Yy0ZRjFo0aW9eS3JJu_"
+  //   );
+  //   return publishResult;
+  // }
 
-  uploadToDraft().then((res) => {
-    console.log(res);
-  });
+  // uploadToDraft().then((res) => {
+  //   console.log(res);
+  // });
 
 
 

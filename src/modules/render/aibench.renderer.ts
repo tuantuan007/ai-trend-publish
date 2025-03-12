@@ -3,6 +3,7 @@ import fs from "fs";
 import { BaseTemplateRenderer } from "./base.renderer";
 import { ModelPerformance } from "@src/api/livebench.api";
 import { AIBenchTemplate, CategoryData, ModelScore } from "./interfaces/aibench.type";
+import ejs from "ejs";
 
 /**
  * AI Benchmark模板渲染器
@@ -92,6 +93,21 @@ export class AIBenchTemplateRenderer extends BaseTemplateRenderer<AIBenchTemplat
             categories: categories,
             globalTop10: allModels.slice(0, 10)
         };
+    }
+
+
+    /**
+     * 渲染AIBenchTemplate
+     * @param data 渲染数据
+     * @param template 模板
+     * @returns 渲染后的HTML
+     */
+    protected async doRender(data: AIBenchTemplate, template: string): Promise<string> {
+        return ejs.render(
+            template,
+            data,
+            { rmWhitespace: true }
+        );
     }
 
 }

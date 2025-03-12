@@ -51,6 +51,8 @@ export abstract class BaseTemplateRenderer<T extends ejs.Data> {
         return this.availableTemplates[randomIndex];
     }
 
+    protected abstract doRender(data: T, template: string): Promise<string>;
+
     /**
      * 渲染模板
      * @param data 渲染数据
@@ -59,16 +61,10 @@ export abstract class BaseTemplateRenderer<T extends ejs.Data> {
      */
     public async render(
         data: T,
-        preProcess?: (data: T) => Promise<T>,
         templateType?: string,
 
     ): Promise<string> {
         try {
-
-            // 预处理
-            if (preProcess) {
-                data = await preProcess(data);
-            }
 
             let finalTemplateType: string;
 
@@ -93,16 +89,8 @@ export abstract class BaseTemplateRenderer<T extends ejs.Data> {
                 throw new Error(`Template '${finalTemplateType}' not found for ${this.templatePrefix}`);
             }
 
-            // 使用 EJS 渲染模板
-            return ejs.render(
-                template,
-                {
-                    articles: data,
-                },
-                {
-                    rmWhitespace: true,
-                }
-            );
+            // 使用 EJS 渲染模板 
+            return await this.doRender(data, template);
         } catch (error) {
             console.error("模板渲染失败:", error);
             throw error;

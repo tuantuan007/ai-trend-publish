@@ -253,15 +253,7 @@ export class WeixinWorkflow {
       // 上传封面图片
       const mediaId = await this.publisher.uploadImage(imageUrl);
 
-      const renderedTemplate = await this.renderer.render(templateData, async (data) => {
-        // 处理图片 上传图片到微信
-        for (const article of data) {
-          const { content, results } = await this.imageProcessor.processContent(article.content);
-          article.content = content;
-          console.log(results);
-        }
-        return data;
-      });
+      const renderedTemplate = await this.renderer.render(templateData);
       console.log("[发布] 发布到微信公众号");
       const publishResult = await this.publisher.publish(
         renderedTemplate,
