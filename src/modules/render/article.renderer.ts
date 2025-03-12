@@ -1,5 +1,3 @@
-import path from "node:path";
-import fs from "node:fs";
 import { BaseTemplateRenderer } from "@src/modules/render/base.renderer.ts";
 import { WeixinTemplate } from "@src/modules/render/interfaces/article.type.ts";
 import ejs from "npm:ejs";
@@ -64,12 +62,12 @@ export class WeixinArticleTemplateRenderer extends BaseTemplateRenderer<WeixinTe
     /**
      * 加载文章模板文件
      */
-    protected loadTemplates(): void {
+    protected async loadTemplates(): Promise<void> {
         this.templates = {
-            default: this.getTemplateContent("src/templates/article/article.ejs"),
-            modern: this.getTemplateContent("src/templates/article/article.modern.ejs"),
-            tech: this.getTemplateContent("src/templates/article/article.tech.ejs"),
-            mianpro: this.getTemplateContent("src/templates/article/article.mianpro.ejs"),
+            default: await this.getTemplateContent("/templates/article/article.ejs"),
+            modern: await this.getTemplateContent("/templates/article/article.modern.ejs"),
+            tech: await this.getTemplateContent("/templates/article/article.tech.ejs"),
+            mianpro: await this.getTemplateContent("/templates/article/article.mianpro.ejs"),
         };
     }
 

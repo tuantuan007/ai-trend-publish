@@ -3,6 +3,12 @@
 基于 Deno
 开发的趋势发现和内容发布系统，支持多源数据采集、智能总结和自动发布到微信公众号。
 
+> 🌰 示例公众号：**AISPACE科技空间**
+
+![](http://mmbiz.qpic.cn/mmbiz_jpg/QNWU7jFZnia19hwqa3MkjQVmq1bLmxfmWqR6pb8L1iaESdtPyLhsAxH3Eqiaia8urKUEMkUlxRPKj1wcdQaQ5AzNaA/0)
+
+> 即刻关注，体验 AI 智能创作的内容～
+
 ## 🛠 开发环境
 
 - **运行环境**: [Deno](https://deno.land/) v2.0.0 或更高版本
@@ -48,15 +54,20 @@ deno task start
 # 测试运行
 deno task test
 
-# 编译发布
-deno task build:XXX
+# 编译Windows版本
+deno task build:win
+
+# 编译Mac版本
+deno task build:mac-x64    # Intel芯片
+deno task build:mac-arm64  # M系列芯片
+
+# 编译Linux版本
+deno task build:linux-x64   # x64架构
+deno task build:linux-arm64 # ARM架构
+
+# 编译所有平台版本
+deno task build:all
 ```
-
-> 🌰 示例公众号：**AISPACE科技空间**
-
-![](http://mmbiz.qpic.cn/mmbiz_jpg/QNWU7jFZnia19hwqa3MkjQVmq1bLmxfmWqR6pb8L1iaESdtPyLhsAxH3Eqiaia8urKUEMkUlxRPKj1wcdQaQ5AzNaA/0)
-
-> 即刻关注，体验 AI 智能创作的内容～
 
 ## 🌟 主要功能
 
@@ -143,6 +154,7 @@ TrendPublish 提供了多种精美的文章模板。查看
 ```bash
 git clone https://github.com/OpenAISpace/ai-trend-publish
 ```
+
 2. 配置环境变量
 
 ```bash
@@ -280,19 +292,54 @@ deno start start
 ### 方式一：直接部署
 
 1. 在服务器上安装 Deno
-```bash
+
+Windows:
+
+```powershell
 irm https://deno.land/install.ps1 | iex
 ```
+
+Linux/MacOS:
+
+```bash
+curl -fsSL https://deno.land/install.sh | sh
+```
+
 2. 克隆项目
+
 ```bash
 git clone https://github.com/OpenAISpace/ai-trend-publish.git
+cd ai-trend-publish
 ```
+
 3. 配置环境变量
 
-4. 启动服务
 ```bash
-# 方式1：通过环境变量文件运行
+cp .env.example .env
+# 编辑 .env 文件配置必要的环境变量
+```
+
+4. 启动服务
+
+```bash
+# 开发模式（支持热重载）
 deno task start
+
+# 测试模式运行
+deno task test
+
+# 使用PM2进行进程管理（推荐）
+npm install -g pm2
+pm2 start --interpreter="deno" --interpreter-args="run --allow-all" src/main.ts
+```
+
+5. 设置开机自启（可选）
+
+```bash
+# 使用PM2设置开机自启
+pm2 startup
+pm2 save
+```
 
 ### 方式二：Docker 部署
 

@@ -1,8 +1,8 @@
 import { ConfigManager } from "@src/utils/config/config-manager.ts";
 import { WeixinImageProcessor } from "@src/utils/image/image-processor.ts";
 import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher.ts";
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
 const templatePath = path.join(__dirname, "../templates/article");
 const templates = fs.readdirSync(templatePath)
@@ -27,7 +27,7 @@ async function main() {
         console.log(`已备份文件: ${backupPath}`);
 
         // 处理模板内容
-        const result = await weixinImageProcessor.processEjsContent(ejsTemplate);
+        const result = await weixinImageProcessor.processContent(ejsTemplate);
 
         // 写回文件
         fs.writeFileSync(templateFilePath, result.content, "utf-8");

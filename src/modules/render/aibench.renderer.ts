@@ -17,9 +17,9 @@ export class AIBenchTemplateRenderer extends BaseTemplateRenderer<AIBenchTemplat
     /**
      * 加载AI Benchmark模板文件
      */
-    protected loadTemplates(): void {
+    protected async loadTemplates(): Promise<void> {
         this.templates = {
-            default: this.getTemplateContent("src/templates/aibench.ejs"),
+            default: await this.getTemplateContent("/templates/aibench.ejs"),
         };
     }
 

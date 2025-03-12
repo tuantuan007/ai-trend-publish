@@ -2,11 +2,11 @@
   "tasks": {
     "start": "deno run --watch --allow-env --allow-ffi --allow-read --allow-sys --allow-net src/index.ts",
     "test": "deno run --allow-env --allow-ffi --allow-read  --allow-sys --allow-net src/test.ts",
-    "build:win": "deno compile --allow-env --allow-ffi --allow-read --allow-sys --allow-net  --target x86_64-pc-windows-msvc --output trendFinder.exe --icon ./docs/images/main.ico src/test.ts",
-    "build:mac-x64": "deno compile --allow-env --allow-ffi --allow-read --allow-sys --allow-net  --target x86_64-apple-darwin --output trendFinder-mac-x64 --icon ./docs/images/main.ico src/test.ts",
-    "build:mac-arm64": "deno compile --allow-env --allow-ffi --allow-read --allow-sys --allow-net  --target aarch64-apple-darwin --output trendFinder-mac-arm64 --icon ./docs/images/main.ico src/test.ts",
-    "build:linux-x64": "deno compile --allow-env --allow-ffi --allow-read --allow-sys --allow-net  --target x86_64-unknown-linux-gnu --output trendFinder-linux-x64 --icon ./docs/images/main.ico src/test.ts",
-    "build:linux-arm64": "deno compile --allow-env --allow-ffi --allow-read --allow-sys --allow-net  --target aarch64-unknown-linux-gnu --output trendFinder-linux-arm64 --icon ./docs/images/main.ico src/test.ts",
+    "build:win": "deno compile --allow-env --allow-ffi --allow-read --allow-sys --allow-net  --target x86_64-pc-windows-msvc --output trendFinder.exe --icon ./docs/images/main.ico --include src/modules/render/templates src/test.ts ",
+    "build:mac-x64": "deno compile --allow-env --allow-ffi --allow-read --allow-sys --allow-net  --target x86_64-apple-darwin --output trendFinder-mac-x64 --include src/modules/render/templates src/test.ts ",
+    "build:mac-arm64": "deno compile --allow-env --allow-ffi --allow-read --allow-sys --allow-net  --target aarch64-apple-darwin --output trendFinder-mac-arm64 --include src/modules/render/templates src/test.ts ",
+    "build:linux-x64": "deno compile --allow-env --allow-ffi --allow-read --allow-sys --allow-net  --target x86_64-unknown-linux-gnu --output trendFinder-linux-x64 --include src/modules/render/templates src/test.ts ",
+    "build:linux-arm64": "deno compile --allow-env --allow-ffi --allow-read --allow-sys --allow-net  --target aarch64-unknown-linux-gnu --output trendFinder-linux-arm64 --include src/modules/render/templates src/test.ts ",
     "build:all": "deno task build:win && deno task build:mac-x64 && deno task build:mac-arm64 && deno task build:linux-x64 && deno task build:linux-arm64"
   },
   "imports": {

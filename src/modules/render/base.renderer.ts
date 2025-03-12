@@ -13,8 +13,21 @@ export abstract class BaseTemplateRenderer<T extends ejs.Data> {
 
     constructor(templatePrefix: string) {
         this.templatePrefix = templatePrefix;
-        this.loadTemplates();
         this.configManager = ConfigManager.getInstance();
+        // 初始化时异步加载模板
+        this.initializeTemplates();
+    }
+
+    /**
+     * 初始化并加载模板
+     */
+    private async initializeTemplates(): Promise<void> {
+        try {
+            await this.loadTemplates();
+        } catch (error) {
+            console.error('模板加载失败:', error);
+            throw error;
+        }
     }
 
     /**
@@ -22,31 +35,61 @@ export abstract class BaseTemplateRenderer<T extends ejs.Data> {
      * @param templatePath 模板文件路径
      * @returns 模板内容
      */
-    protected getTemplateContent(templatePath: string): string {
+    protected async getTemplateContent(templatePath: string): Promise<string> {
         const decoder = new TextDecoder('utf-8');
+                
+        // 1. 首先尝试从exe内部资源加载
         try {
-            // 尝试使用相对于当前工作目录的路径
-            const absolutePath = join(Deno.cwd(), templatePath);
-            console.log('尝试加载模板文件:', absolutePath);
-            return decoder.decode(Deno.readFileSync(absolutePath));
-        } catch (error) {
-            console.error('模板文件加载失败:', error);
-            // 如果加载失败，尝试从编译资源中加载
-            try {
-                const resourcePath = join(Deno.execPath(), "..", templatePath);
-                console.log('尝试从编译资源加载模板文件:', resourcePath);
-                return decoder.decode(Deno.readFileSync(resourcePath));
-            } catch (error2) {
-                console.error('从编译资源加载模板文件失败:', error2);
-                throw new Error(`无法加载模板文件: ${templatePath}`);
+            console.log('尝试从exe内部加载模板文件:', templatePath);
+            // 使用 Deno.stat 检查资源是否存在
+            const stat = await Deno.stat(import.meta.dirname + templatePath);
+            if (stat.isFile) {
+                const bundledTemplate = await Deno.readFile(import.meta.dirname + templatePath);
+                console.log('从exe内部加载模板文件成功:', templatePath);
+                return decoder.decode(bundledTemplate);
             }
+        } catch (error) {
+            console.log('从exe内部加载模板文件失败，尝试其他方式:', error);
         }
+
+        // 2. 尝试使用相对于当前工作目录的路径（开发时使用）
+        try {
+            const absolutePath = join(Deno.cwd(), templatePath);
+            console.log('尝试从工作目录加载模板文件:', absolutePath);
+            const fileContent = Deno.readFileSync(absolutePath);
+            if (fileContent) {
+                return decoder.decode(fileContent);
+            }
+        } catch (error) {
+            console.error('从工作目录加载模板文件失败:', error);
+        }
+
+        // 3. 最后尝试从可执行文件目录加载
+        try {
+            const execPath = Deno.execPath();
+            const execDir = execPath.substring(0, execPath.lastIndexOf(Deno.build.os === 'windows' ? '\\' : '/'));
+            const resourcePath = join(execDir, templatePath);
+            console.log('尝试从可执行文件目录加载模板文件:', resourcePath);
+            const fileContent = Deno.readFileSync(resourcePath);
+            if (fileContent) {
+                return decoder.decode(fileContent);
+            }
+        } catch (error2) {
+            console.error('从可执行文件目录加载失败:', error2);
+        }
+
+        // 如果所有尝试都失败，抛出错误
+        throw new Error(`无法加载模板文件: ${templatePath}，请确保模板文件存在且路径正确。
+请检查以下路径：
+1. ${templatePath} (exe内部)
+2. ${join(Deno.cwd(), templatePath)} (工作目录)
+3. ${join(Deno.execPath(), '..', templatePath)} (可执行文件目录)`);
     }
 
     /**
      * 加载模板文件
      */
-    protected abstract loadTemplates(): void;
+    protected abstract loadTemplates(): Promise<void>;
 
     /**
      * 从配置中获取模板类型

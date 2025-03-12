@@ -15,9 +15,9 @@ export class HelloGithubTemplateRenderer extends BaseTemplateRenderer<AIGithubIt
   /**
    * 加载HelloGithub模板文件
    */
-  protected loadTemplates(): void {
+  protected async loadTemplates(): Promise<void> {
     this.templates = {
-      default: this.getTemplateContent("src/templates/hellogithub.ejs"),
+      default: await this.getTemplateContent("/templates/hellogithub.ejs"),
     };
   }
 
