@@ -3,7 +3,7 @@ name: Deploy to Production # 部署到生产环境
 on:
   push:
     tags:
-      - 'v*' # 当创建以v开头的tag时触发
+      - "v*" # 当创建以v开头的tag时触发
   workflow_dispatch: # 允许手动触发工作流
 
 jobs:
@@ -13,17 +13,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4 # 检出代码
 
-      - name: Setup Node.js # 设置 Node.js 环境
-        uses: actions/setup-node@v4
+      - name: Setup Deno # 设置 Deno 环境
+        uses: denoland/setup-deno@v2
         with:
-          node-version: "20" # 使用 Node.js 20 版本
-          cache: "npm" # 启用 npm 依赖缓存
+          deno-version: "2.x" # 使用最新的 Deno 2.x 版本
+
+      - name: Cache dependencies # 缓存依赖
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.deno
+            ~/.cache/deno
+          key: ${{ runner.os }}-deno2-${{ hashFiles('**/deps.ts') }}
 
       - name: Install dependencies # 安装项目依赖
-        run: npm ci
+        run: deno cache --unstable src/index.ts
 
       - name: Build # 构建项目
-        run: npm run build
+        run: |
+          deno compile --allow-env --allow-ffi --allow-read --allow-sys --allow-net \
+          --target x86_64-unknown-linux-gnu \
+          --output dist/trend-finder \
+          --include src/modules/render/templates \
+          src/index.ts
 
       - name: Create .env file # 创建环境配置文件
         run: |
@@ -49,11 +61,12 @@ jobs:
           echo "Testing SSH connection..."
           echo "Server: ${{ secrets.SERVER_HOST }}"
           echo "User: ${{ secrets.SERVER_USER }}"
-          ssh -i ~/.ssh/id_rsa "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" "source ~/.nvm/nvm.sh && nvm use 22 && echo 'SSH connection successful'"
+          ssh -i ~/.ssh/id_rsa "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" "deno --version && echo 'SSH connection successful'"
 
       - name: Package Files # 打包文件
         run: |
-          tar -czf build.tar.gz dist package*.json .env
+          cp -r src/modules/render/templates dist/
+          tar -czf build.tar.gz dist deno.json deno.lock .env
 
       - name: Upload to Server # 上传到服务器
         run: |
@@ -62,10 +75,7 @@ jobs:
       - name: Deploy on Server # 在服务器上部署
         run: |
           ssh -i ~/.ssh/id_rsa "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" "cd ~/app && \
-            source ~/.nvm/nvm.sh && \
-            nvm use 22 && \
             tar -xzf build.tar.gz && \
-            npm ci --production && \
-            pm2 delete trend-finder || true && \
-            pm2 start dist/index.js --name trend-finder && \
+            pkill -f 'trend-finder' || true && \
+            nohup ./dist/trend-finder --allow-env --allow-ffi --allow-read --allow-sys --allow-net > trend-finder.log 2>&1 & \
             rm build.tar.gz"
