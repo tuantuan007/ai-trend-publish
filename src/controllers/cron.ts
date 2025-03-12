@@ -31,10 +31,9 @@ const initializeWorkflows = () => {
 };
 
 export const startCronJobs = () => {
-  console.log("初始化定时任务...");
   const barkNotifier = new BarkNotifier();
-  barkNotifier.notify("任务开始", "任务开始");
-  
+  barkNotifier.notify("定时任务启动", "定时任务启动");
+  console.log("初始化定时任务...");
   initializeWorkflows();
 
   // 每天凌晨3点执行
