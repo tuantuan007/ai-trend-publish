@@ -3,9 +3,11 @@ import { WeixinWorkflow } from "@src/services/weixin-article.workflow.ts";
 import { Workflow } from "@src/services/interfaces/workflow.interface.ts";
 import { WeixinAIBenchWorkflow } from "@src/services/weixin-aibench.workflow.ts";
 import { WeixinHelloGithubWorkflow } from "@src/services/weixin-hellogithub.workflow.ts";
+import { BarkNotifier } from "@src/modules/notify/bark.notify.ts";
 
 // 工作流映射表，用于存储不同日期对应的工作流
 const workflowMap = new Map<number, Workflow>();
+
 
 // 初始化工作流映射
 const initializeWorkflows = () => {
@@ -28,8 +30,11 @@ const initializeWorkflows = () => {
 
 };
 
-export const startCronJobs = async () => {
+export const startCronJobs = () => {
   console.log("初始化定时任务...");
+  const barkNotifier = new BarkNotifier();
+  barkNotifier.notify("任务开始", "任务开始");
+  
   initializeWorkflows();
 
   // 每天凌晨3点执行
