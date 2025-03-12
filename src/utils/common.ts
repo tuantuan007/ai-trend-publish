@@ -22,7 +22,7 @@ export function formatDate(dateString: string): string {
       throw new Error("Invalid date");
     }
   } catch (error) {
-    throw new Error(`Unable to parse date: ${dateString}`);
+    throw new Error(`Unable to parse date: ${dateString}`, { cause: error });
   }
 
   const year = date.getFullYear();

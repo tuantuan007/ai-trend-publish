@@ -1,12 +1,12 @@
 import fs from "fs";
 import path from "path";
 
-import { WeixinTemplate } from "../interfaces/article.type";
-import { formatDate } from "@src/utils/common";
-import { ConfigManager } from "@src/utils/config/config-manager";
-import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher";
-import { WeixinArticleTemplateRenderer } from "../article.renderer";
-import { WeixinImageProcessor } from "@src/utils/image/image-processor";
+import { WeixinTemplate } from "@src/modules/render/interfaces/article.type.ts";
+import { formatDate } from "@src/utils/common.ts";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher.ts";
+import { WeixinArticleTemplateRenderer } from "@src/modules/render/article.renderer.ts";
+import { WeixinImageProcessor } from "@src/utils/image/image-processor.ts";
 
 
 const originalConsoleLog = console.log;

@@ -1,8 +1,8 @@
-import { ImageGenerator, ImageGeneratorType, ImageGeneratorTypeMap } from "../interfaces/image-gen.interface";
-import { TextLogoGenerator } from "./text-logo";
-import { PDD920LogoGenerator } from "./pdd920-logo";
-import { AliWanX21ImageGenerator } from "./aliyun/aliwanx2.1.image";
-import { AliyunWanxPosterGenerator } from "./aliyun/aliwanx-poster.image-generator";
+import { ImageGenerator, ImageGeneratorType, ImageGeneratorTypeMap } from "@src/providers/interfaces/image-gen.interface.ts";
+import { TextLogoGenerator } from "@src/providers/image-gen/text-logo.ts";
+import { PDD920LogoGenerator } from "@src/providers/image-gen/pdd920-logo.ts";
+import { AliWanX21ImageGenerator } from "@src/providers/image-gen/aliyun/aliwanx2.1.image.ts";
+import { AliyunWanxPosterGenerator } from "@src/providers/image-gen/aliyun/aliwanx-poster.image-generator.ts";
 
 /**
  * 图片生成器工厂类

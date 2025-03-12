@@ -1,8 +1,8 @@
-import { ContentSummarizer, Summary } from "@src/modules/interfaces/summarizer.interface";
-import { getSummarizerSystemPrompt, getSummarizerUserPrompt, getTitleSystemPrompt, getTitleUserPrompt } from "@src/prompts/summarizer.prompt";
-import { LLMFactory } from "@src/providers/llm/llm-factory";
-import { ConfigManager } from "@src/utils/config/config-manager";
-import { RetryUtil } from "@src/utils/retry.util";
+import { ContentSummarizer, Summary } from "@src/modules/interfaces/summarizer.interface.ts";
+import { getSummarizerSystemPrompt, getSummarizerUserPrompt, getTitleSystemPrompt, getTitleUserPrompt } from "@src/prompts/summarizer.prompt.ts";
+import { LLMFactory } from "@src/providers/llm/llm-factory.ts";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { RetryUtil } from "@src/utils/retry.util.ts";
 
 export class AISummarizer implements ContentSummarizer {
   private llmFactory: LLMFactory;

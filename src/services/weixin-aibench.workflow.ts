@@ -1,11 +1,10 @@
-import { Workflow } from "./interfaces/workflow.interface";
-import { LiveBenchAPI } from "../api/livebench.api";
-import { AIBenchTemplateRenderer } from "@src/modules/render";
-import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher";
-import { CategoryData, ModelScore } from "@src/modules/render/interfaces/aibench.type";
-import { PDD920LogoGenerator } from "@src/providers/image-gen/pdd920-logo";
-import { BarkNotifier } from "@src/modules/notify/bark.notify";
-import { ImageGeneratorFactory } from "@src/providers/image-gen/image-generator-factory";
+import { Workflow } from "@src/services/interfaces/workflow.interface.ts";
+import { LiveBenchAPI } from "@src/api/livebench.api.ts";
+import { AIBenchTemplateRenderer } from "@src/modules/render/index.ts";
+import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher.ts";
+import { CategoryData, ModelScore } from "@src/modules/render/interfaces/aibench.type.ts";
+import { BarkNotifier } from "@src/modules/notify/bark.notify.ts";
+import { ImageGeneratorFactory } from "@src/providers/image-gen/image-generator-factory.ts";
 
 export class WeixinAIBenchWorkflow implements Workflow {
   private liveBenchAPI: LiveBenchAPI;

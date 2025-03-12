@@ -1,9 +1,9 @@
-import path from "path";
-import fs from "fs";
-import { BaseTemplateRenderer } from "./base.renderer";
-import { ModelPerformance } from "@src/api/livebench.api";
-import { AIBenchTemplate, CategoryData, ModelScore } from "./interfaces/aibench.type";
-import ejs from "ejs";
+import path from "node:path";
+import fs from "node:fs";
+import { BaseTemplateRenderer } from "@src/modules/render/base.renderer.ts";
+import { ModelPerformance } from "@src/api/livebench.api.ts";
+import { AIBenchTemplate, CategoryData, ModelScore } from "@src/modules/render/interfaces/aibench.type.ts";
+import ejs from "npm:ejs";
 
 /**
  * AI Benchmark模板渲染器
@@ -19,7 +19,7 @@ export class AIBenchTemplateRenderer extends BaseTemplateRenderer<AIBenchTemplat
      */
     protected loadTemplates(): void {
         this.templates = {
-            default: fs.readFileSync(path.join(__dirname, "../../templates/aibench.ejs"), "utf-8"),
+            default: this.getTemplateContent("src/templates/aibench.ejs"),
         };
     }
 
@@ -95,7 +95,6 @@ export class AIBenchTemplateRenderer extends BaseTemplateRenderer<AIBenchTemplat
         };
     }
 
-
     /**
      * 渲染AIBenchTemplate
      * @param data 渲染数据
@@ -109,5 +108,4 @@ export class AIBenchTemplateRenderer extends BaseTemplateRenderer<AIBenchTemplat
             { rmWhitespace: true }
         );
     }
-
 }

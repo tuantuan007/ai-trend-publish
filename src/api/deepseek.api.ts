@@ -1,6 +1,5 @@
-import axios from "axios";
-import { ConfigManager } from "../utils/config/config-manager";
-
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import axios from "npm:axios";
 interface BalanceInfo {
   currency: string;
   total_balance: string;
@@ -91,7 +90,7 @@ export class DeepseekAPI {
       );
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         throw new Error(
           `Failed to create chat completion: ${
@@ -146,7 +145,7 @@ export class DeepseekAPI {
       );
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         throw new Error(
           `Failed to get Deepseek balance: ${

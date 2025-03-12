@@ -1,5 +1,6 @@
-import { ConfigManager } from "@src/utils/config/config-manager";
-import { ContentPublisher, PublishResult } from "../interfaces/publisher.interface";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { ContentPublisher, PublishResult } from "@src/modules/interfaces/publisher.interface.ts";
+import { Buffer } from "node:buffer";
 
 
 interface WeixinToken {

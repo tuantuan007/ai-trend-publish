@@ -1,7 +1,7 @@
-import { ConfigManager } from "@src/utils/config/config-manager";
-import { LLMProvider, LLMProviderType, LLMProviderTypeMap } from "@src/providers/interfaces/llm.interface";
-import { OpenAICompatibleLLM } from "./openai-compatible-llm";
-import { XunfeiLLM } from "./xunfei-llm";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { LLMProvider, LLMProviderType, LLMProviderTypeMap } from "@src/providers/interfaces/llm.interface.ts";
+import { OpenAICompatibleLLM } from "@src/providers/llm/openai-compatible-llm.ts";
+import { XunfeiLLM } from "@src/providers/llm/xunfei-llm.ts";
 
 /**
  * 解析LLM提供者配置

@@ -27,7 +27,7 @@ export const getSummarizerUserPrompt = ({
   content,
   language = "中文",
   minLength = 200,
-  maxLength = 500,
+  maxLength = 300,
 }: SummarizerPromptParams): string => {
   return `请分析以下内容，在保持原意的基础上进行专业的扩充和完善，使用${language}，完善后的内容不少于${minLength}字，不超过${maxLength}字：\n\n${content}\n\n
     要求：

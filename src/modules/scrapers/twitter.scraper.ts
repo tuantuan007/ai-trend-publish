@@ -1,9 +1,6 @@
-import path from "path";
-import fs from "fs";
-import dotenv from "dotenv";
-import { ContentScraper, Media, ScrapedContent, ScraperOptions } from "../interfaces/scraper.interface";
-import { ConfigManager } from "@src/utils/config/config-manager";
-import { formatDate } from "@src/utils/common";
+import { ContentScraper, Media, ScrapedContent, ScraperOptions } from "@src/modules/interfaces/scraper.interface.ts";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { formatDate } from "@src/utils/common.ts";
 
 
 

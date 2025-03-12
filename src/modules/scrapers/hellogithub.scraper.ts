@@ -1,8 +1,8 @@
-import * as cheerio from "cheerio";
+import * as cheerio from "npm:cheerio";
 import {
   AIGithubItem,
   AIGithubItemDetail,
-} from "../render/interfaces/aigithub.type";
+} from "@src/modules/render/interfaces/aigithub.type.ts";
 
 export class HelloGithubScraper {
   private static readonly BASE_URL = "https://hellogithub.com";

@@ -1,4 +1,4 @@
-import mysql, { Pool, PoolConnection, PoolOptions } from "mysql2/promise";
+import mysql, { Pool, PoolConnection, PoolOptions } from "npm:mysql2/promise";
 
 export class MySQLDB {
   private static instance: MySQLDB;

@@ -1,5 +1,5 @@
-import { BaseImageGenerator } from '../base.image-generator';
-import axios from 'axios';
+import { BaseImageGenerator } from "@src/providers/image-gen/base.image-generator.ts";
+import axios from 'npm:axios';
 
 /**
  * 阿里云基础任务响应接口
@@ -65,7 +65,8 @@ export abstract class BaseAliyunImageGenerator extends BaseImageGenerator {
     /**
      * 生成图片的抽象方法，需要子类实现
      */
-    abstract generate(options: any): Promise<string>;
+    // deno-lint-ignore no-explicit-any
+    abstract override generate(options: any): Promise<string>;
 
     /**
      * 提交任务到阿里云服务
@@ -87,7 +88,7 @@ export abstract class BaseAliyunImageGenerator extends BaseImageGenerator {
                 }
             );
             return response.data;
-        } catch (error) {
+        } catch (error: any) {
             if (axios.isAxiosError(error)) {
                 throw new Error(`阿里云API调用失败: ${error.response?.data?.message || error.message}`);
             }
@@ -110,7 +111,7 @@ export abstract class BaseAliyunImageGenerator extends BaseImageGenerator {
                 }
             );
             return response.data.output;
-        } catch (error) {
+        } catch (error: any) {
             if (axios.isAxiosError(error)) {
                 throw new Error(`任务状态检查失败: ${error.response?.data?.message || error.message}`);
             }

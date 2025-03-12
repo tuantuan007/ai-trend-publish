@@ -1,5 +1,4 @@
-import sharp from "sharp";
-import { BaseImageGenerator } from "./base.image-generator";
+import { BaseImageGenerator } from "@src/providers/image-gen/base.image-generator.ts";
 
 export interface TextLogoOptions {
   text: string;
@@ -27,7 +26,7 @@ export class TextLogoGenerator extends BaseImageGenerator {
     // 文本Logo生成器不需要配置
   }
 
-  async generate(options: TextLogoOptions): Promise<Buffer> {
+  async generate(options: TextLogoOptions): Promise<string> {
     const finalOptions = { ...TextLogoGenerator.DEFAULT_OPTIONS, ...options };
     const {
       width,
@@ -40,7 +39,7 @@ export class TextLogoGenerator extends BaseImageGenerator {
     } = finalOptions;
 
     // 创建SVG文本
-    const svg = `
+    return `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
       <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -66,14 +65,7 @@ export class TextLogoGenerator extends BaseImageGenerator {
         >
           ${text}
         </text>
-      </svg>
-    `;
-
-    // 使用sharp将SVG转换为图像
-    return await sharp(Buffer.from(svg))
-      .resize(width!, height!)
-      .png()
-      .toBuffer();
+      </svg>`;
   }
 
   public static async saveToFile(
@@ -81,7 +73,7 @@ export class TextLogoGenerator extends BaseImageGenerator {
     outputPath: string
   ): Promise<void> {
     const generator = new TextLogoGenerator();
-    const buffer = await generator.generate(options);
-    await sharp(buffer).toFile(outputPath);
+    const svg = await generator.generate(options);
+    await Deno.writeTextFile(outputPath, svg);
   }
 }

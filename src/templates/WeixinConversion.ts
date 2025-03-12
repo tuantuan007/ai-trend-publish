@@ -1,6 +1,6 @@
-import { ConfigManager } from "@src/utils/config/config-manager";
-import { WeixinImageProcessor } from "@src/utils/image/image-processor";
-import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { WeixinImageProcessor } from "@src/utils/image/image-processor.ts";
+import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher.ts";
 import fs from "fs";
 import path from "path";
 

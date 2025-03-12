@@ -1,7 +1,6 @@
-import path from "path";
-import ejs from "ejs";
-import { ConfigManager } from "../../utils/config/config-manager";
-import fs from "fs";
+import ejs from "npm:ejs";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { join } from "node:path";
 
 /**
  * 基础模板渲染器类
@@ -16,6 +15,32 @@ export abstract class BaseTemplateRenderer<T extends ejs.Data> {
         this.templatePrefix = templatePrefix;
         this.loadTemplates();
         this.configManager = ConfigManager.getInstance();
+    }
+
+    /**
+     * 获取模板文件内容
+     * @param templatePath 模板文件路径
+     * @returns 模板内容
+     */
+    protected getTemplateContent(templatePath: string): string {
+        const decoder = new TextDecoder('utf-8');
+        try {
+            // 尝试使用相对于当前工作目录的路径
+            const absolutePath = join(Deno.cwd(), templatePath);
+            console.log('尝试加载模板文件:', absolutePath);
+            return decoder.decode(Deno.readFileSync(absolutePath));
+        } catch (error) {
+            console.error('模板文件加载失败:', error);
+            // 如果加载失败，尝试从编译资源中加载
+            try {
+                const resourcePath = join(Deno.execPath(), "..", templatePath);
+                console.log('尝试从编译资源加载模板文件:', resourcePath);
+                return decoder.decode(Deno.readFileSync(resourcePath));
+            } catch (error2) {
+                console.error('从编译资源加载模板文件失败:', error2);
+                throw new Error(`无法加载模板文件: ${templatePath}`);
+            }
+        }
     }
 
     /**
@@ -62,10 +87,8 @@ export abstract class BaseTemplateRenderer<T extends ejs.Data> {
     public async render(
         data: T,
         templateType?: string,
-
     ): Promise<string> {
         try {
-
             let finalTemplateType: string;
 
             // 如果没有传templateType，从配置获取

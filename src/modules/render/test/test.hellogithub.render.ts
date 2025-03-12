@@ -1,7 +1,7 @@
 import ejs from "ejs";
 import fs from "fs";
 import path from "path";
-import { HelloGithubScraper } from "../../scrapers/hellogithub.scraper";
+import { HelloGithubScraper } from "@src/modules/scrapers/hellogithub.scraper.ts";
 
 interface RenderOptions {
   title?: string;

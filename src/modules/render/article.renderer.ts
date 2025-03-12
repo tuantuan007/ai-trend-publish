@@ -1,11 +1,10 @@
-import path from "path";
-import fs from "fs";
-import { BaseTemplateRenderer } from "./base.renderer";
-import { WeixinTemplate } from "./interfaces/article.type";
-import ejs from "ejs";
-import { log } from "console";
-import { WeixinImageProcessor } from "@src/utils/image/image-processor";
-import { WeixinPublisher } from "../publishers/weixin.publisher";
+import path from "node:path";
+import fs from "node:fs";
+import { BaseTemplateRenderer } from "@src/modules/render/base.renderer.ts";
+import { WeixinTemplate } from "@src/modules/render/interfaces/article.type.ts";
+import ejs from "npm:ejs";
+import { WeixinImageProcessor } from "@src/utils/image/image-processor.ts";
+import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher.ts";
 
 /**
  * 文章模板渲染器
@@ -67,10 +66,10 @@ export class WeixinArticleTemplateRenderer extends BaseTemplateRenderer<WeixinTe
      */
     protected loadTemplates(): void {
         this.templates = {
-            default: fs.readFileSync(path.join(__dirname, "../../templates/article/article.ejs"), "utf-8"),
-            modern: fs.readFileSync(path.join(__dirname, "../../templates/article/article.modern.ejs"), "utf-8"),
-            tech: fs.readFileSync(path.join(__dirname, "../../templates/article/article.tech.ejs"), "utf-8"),
-            mianpro: fs.readFileSync(path.join(__dirname, "../../templates/article/article.mianpro.ejs"), "utf-8"),
+            default: this.getTemplateContent("src/templates/article/article.ejs"),
+            modern: this.getTemplateContent("src/templates/article/article.modern.ejs"),
+            tech: this.getTemplateContent("src/templates/article/article.tech.ejs"),
+            mianpro: this.getTemplateContent("src/templates/article/article.mianpro.ejs"),
         };
     }
 
@@ -82,7 +81,6 @@ export class WeixinArticleTemplateRenderer extends BaseTemplateRenderer<WeixinTe
         // 预处理每篇文章 插入图片到段落之间
         console.log(`WeixinArticleTemplateRenderer doRender: ${data.length} articles`);
         const processedData = data.map(article => this.processArticleContent(article));
-
 
         // 将图片上传到微信 并替换图片url
         for (const article of processedData) {

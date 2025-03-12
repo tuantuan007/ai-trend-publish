@@ -1,4 +1,4 @@
-import { ScrapedContent } from "@src/modules/interfaces/scraper.interface";
+import { ScrapedContent } from "@src/modules/interfaces/scraper.interface.ts";
 
 export function getSystemPrompt(): string {
     return `你是一个专业的AI技术趋势分析师，专注于评估最新AI产品、工具和技术突破。你的任务是识别和评估最具创新性和影响力的AI技术内容，并过滤掉相似或重复的信息。

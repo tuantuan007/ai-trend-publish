@@ -1,7 +1,7 @@
-import axios from "axios";
-import { LLMFactory } from "@src/providers/llm/llm-factory";
-import { LLMProvider } from "@src/providers/interfaces/llm.interface";
-import { RetryUtil } from "@src/utils/retry.util";
+import axios from "npm:axios";
+import { LLMFactory } from "@src/providers/llm/llm-factory.ts";
+import { LLMProvider } from "@src/providers/interfaces/llm.interface.ts";
+import { RetryUtil } from "@src/utils/retry.util.ts";
 
 interface CategoryMapping {
   [key: string]: string[];

@@ -1,4 +1,4 @@
-import { Media } from "@src/modules/interfaces/scraper.interface";
+import { Media } from "@src/modules/interfaces/scraper.interface.ts";
 
 export interface GeneratedTemplate {
   id: string;

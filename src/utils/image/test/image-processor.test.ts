@@ -1,11 +1,14 @@
-import { WeixinImageProcessor } from "../image-processor";
-import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher";
-import { ConfigManager } from "@src/utils/config/config-manager";
-async function test() {
+import { WeixinImageProcessor } from "../image-processor.ts";
+import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher.ts";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { assertEquals } from "https://deno.land/std@0.217.0/assert/mod.ts";
+
+Deno.test("WeixinImageProcessor 应该能正确处理文章中的图片", async () => {
     const configManager = ConfigManager.getInstance();
     await configManager.initDefaultConfigSources();
     const weixinPublisher = new WeixinPublisher();
     const imageProcessor = new WeixinImageProcessor(weixinPublisher);
+    
     const content = `
         # 测试文章
         ![示例图片](https://oss.liuyaowen.cn/images/202503081200663.png)
@@ -13,12 +16,8 @@ async function test() {
     `;
 
     const result = await imageProcessor.processContent(content);
-    console.log('处理后的内容:', result.content);
-    console.log('处理结果:', result.results);
-}
 
-test().then(() => {
-    console.log('测试完成');
-}).catch((error) => {
-    console.error('测试失败', error);
+    console.log(result);
+    
+    // 验证结果包含必要的字段
 });

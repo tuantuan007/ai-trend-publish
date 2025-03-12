@@ -1,6 +1,7 @@
-import { ImageGenerator } from "../interfaces/image-gen.interface";
-import { ConfigManager } from "../../utils/config/config-manager";
-import fs from "fs/promises";
+import { ImageGenerator } from "@src/providers/interfaces/image-gen.interface.ts";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { Buffer } from "node:buffer";
+import fs from "node:fs/promises";
 
 /**
  * 图片生成器基础抽象类

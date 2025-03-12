@@ -1,10 +1,11 @@
-import { WeixinWorkflow } from "./services/weixin-article.workflow";
-import { ConfigManager } from "./utils/config/config-manager";
-import { EnvConfigSource } from "./utils/config/sources/env-config.source";
-import { DbConfigSource } from "./utils/config/sources/db-config.source";
-import { MySQLDB } from "./utils/db/mysql.db";
-import { WeixinAIBenchWorkflow } from "./services/weixin-aibench.workflow";
-import { WeixinHelloGithubWorkflow } from "./services/weixin-hellogithub.workflow";
+// deno-lint-ignore-file no-unused-vars
+import { WeixinWorkflow } from "@src/services/weixin-article.workflow.ts";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { EnvConfigSource } from "@src/utils/config/sources/env-config.source.ts";
+import { DbConfigSource } from "@src/utils/config/sources/db-config.source.ts";
+import { MySQLDB } from "@src/utils/db/mysql.db.ts";
+import { WeixinAIBenchWorkflow } from "@src/services/weixin-aibench.workflow.ts";
+import { WeixinHelloGithubWorkflow } from "@src/services/weixin-hellogithub.workflow.ts";
 async function bootstrap() {
   const configManager = ConfigManager.getInstance();
   await configManager.initDefaultConfigSources();

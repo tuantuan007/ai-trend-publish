@@ -1,6 +1,7 @@
 /**
  * 图片生成器接口
  */
+import { Buffer } from "node:buffer";
 export interface ImageGenerator {
     /**
      * 初始化生成器
@@ -36,8 +37,8 @@ export type ImageGeneratorType = "TEXT_LOGO" | "PDD920_LOGO" | "ALIWANX21" | "AL
  * 图片生成器类型映射
  */
 export interface ImageGeneratorTypeMap {
-    "TEXT_LOGO": import("../image-gen/text-logo").TextLogoGenerator;
-    "PDD920_LOGO": import("../image-gen/pdd920-logo").PDD920LogoGenerator;
-    "ALIWANX21": import("../image-gen/aliyun/aliwanx2.1.image").AliWanX21ImageGenerator;
-    "ALIWANX_POSTER": import("../image-gen/aliyun/aliwanx-poster.image-generator").AliyunWanxPosterGenerator;
+    "TEXT_LOGO": import("../image-gen/text-logo.ts").TextLogoGenerator;
+    "PDD920_LOGO": import("../image-gen/pdd920-logo.ts").PDD920LogoGenerator;
+    "ALIWANX21": import("../image-gen/aliyun/aliwanx2.1.image.ts").AliWanX21ImageGenerator;
+    "ALIWANX_POSTER": import("../image-gen/aliyun/aliwanx-poster.image-generator.ts").AliyunWanxPosterGenerator;
 }

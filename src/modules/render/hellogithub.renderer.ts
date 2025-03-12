@@ -1,8 +1,7 @@
-import path from "path";
-import fs from "fs";
-import { BaseTemplateRenderer } from "./base.renderer";
-import { AIGithubItemDetail } from "./interfaces/aigithub.type";
-import ejs from "ejs";
+import path from "node:path";
+import { BaseTemplateRenderer } from "@src/modules/render/base.renderer.ts";
+import { AIGithubItemDetail } from "@src/modules/render/interfaces/aigithub.type.ts";
+import ejs from "npm:ejs";
 
 /**
  * HelloGithub模板渲染器
@@ -18,7 +17,7 @@ export class HelloGithubTemplateRenderer extends BaseTemplateRenderer<AIGithubIt
    */
   protected loadTemplates(): void {
     this.templates = {
-      default: fs.readFileSync(path.join(__dirname, "../../templates/hellogithub.ejs"), "utf-8"),
+      default: this.getTemplateContent("src/templates/hellogithub.ejs"),
     };
   }
 
@@ -38,5 +37,4 @@ export class HelloGithubTemplateRenderer extends BaseTemplateRenderer<AIGithubIt
       { rmWhitespace: true }
     );
   }
-
 }

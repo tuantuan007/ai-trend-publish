@@ -8,3 +8,4 @@ output
 temp
 .cursor
 *.bak
+*.exe

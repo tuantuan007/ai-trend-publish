@@ -1,4 +1,4 @@
-import { ConfigManager } from "../config/config-manager";
+import { ConfigManager } from "../config/config-manager.ts";
 
 interface RequestOptions extends RequestInit {
     timeout?: number;

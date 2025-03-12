@@ -1,6 +1,5 @@
-import { ConfigManager } from "../utils/config/config-manager";
-import { EnvConfigSource } from "../utils/config/sources/env-config.source";
-import { MySQLDB } from "../utils/db/mysql.db";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { MySQLDB } from "@src/utils/db/mysql.db.ts";
 
 export type NewsType = "AI" | "Tech" | "Crypto" | "All";
 export type NewsPlatform = "firecrawl" | "twitter";

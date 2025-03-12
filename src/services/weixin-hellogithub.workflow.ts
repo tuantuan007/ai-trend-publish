@@ -1,9 +1,9 @@
-import { Workflow } from "./interfaces/workflow.interface";
-import { AliWanX21ImageGenerator } from "../providers/image-gen/aliyun/aliwanx2.1.image";
-import { HelloGithubScraper } from "@src/modules/scrapers/hellogithub.scraper";
-import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher";
-import { HelloGithubTemplateRenderer } from "@src/modules/render";
-import { ImageGeneratorFactory } from "@src/providers/image-gen/image-generator-factory";
+import { Workflow } from "./interfaces/workflow.interface.ts";
+import { AliWanX21ImageGenerator } from "@src/providers/image-gen/aliyun/aliwanx2.1.image.ts";
+import { HelloGithubScraper } from "@src/modules/scrapers/hellogithub.scraper.ts";
+import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher.ts";
+import { ImageGeneratorFactory } from "@src/providers/image-gen/image-generator-factory.ts";
+import { HelloGithubTemplateRenderer } from "@src/modules/render/hellogithub.renderer.ts";
 
 export class WeixinHelloGithubWorkflow implements Workflow {
   private scraper: HelloGithubScraper;

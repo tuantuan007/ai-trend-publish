@@ -1,6 +1,6 @@
-import { ConfigManager } from "../../utils/config/config-manager";
-import { HttpClient } from "../../utils/http/http-client";
-import { ChatCompletionOptions, ChatMessage, LLMProvider } from "../interfaces/llm.interface";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { HttpClient } from "@src/utils/http/http-client.ts";
+import { ChatCompletionOptions, ChatMessage, LLMProvider } from "@src/providers/interfaces/llm.interface.ts";
 
 interface XunfeiMessage {
   role: "system" | "user" | "assistant";

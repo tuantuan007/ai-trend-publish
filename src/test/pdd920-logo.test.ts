@@ -1,5 +1,5 @@
-import { ImageGeneratorFactory } from "@src/providers/image-gen/image-generator-factory";
-import { PDD920LogoGenerator } from "../providers/image-gen/pdd920-logo";
+import { ImageGeneratorFactory } from "@src/providers/image-gen/image-generator-factory.ts";
+import { PDD920LogoGenerator } from "@src/providers/image-gen/pdd920-logo.ts";
 import path from "path";
 
 async function testPDD920Logo() {

@@ -1,21 +1,20 @@
 
-import { z } from "zod";
-import FirecrawlApp from "firecrawl";
-import { ContentScraper, ScrapedContent, ScraperOptions } from "../interfaces/scraper.interface";
-import { ConfigManager } from "@src/utils/config/config-manager";
-import { formatDate } from "@src/utils/common";
-
+import FirecrawlApp from "npm:firecrawl";
+import { ContentScraper, ScrapedContent, ScraperOptions } from "@src/modules/interfaces/scraper.interface.ts";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { formatDate } from "@src/utils/common.ts";
+import zod from "npm:zod";
 
 // 使用 zod 定义数据结构
-const StorySchema = z.object({
-  headline: z.string(),
-  content: z.string(),
-  link: z.string(),
-  date_posted: z.string(),
+const StorySchema = zod.object({
+  headline: zod.string(),
+  content: zod.string(),
+  link: zod.string(),
+  date_posted: zod.string(),
 });
 
-const StoriesSchema = z.object({
-  stories: z.array(StorySchema),
+const StoriesSchema = zod.object({
+  stories: zod.array(StorySchema),
 });
 
 

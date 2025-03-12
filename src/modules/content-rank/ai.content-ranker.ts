@@ -1,10 +1,10 @@
-import { RetryUtil } from '../../utils/retry.util';
-import { ScrapedContent } from '../interfaces/scraper.interface';
-import { LLMFactory } from '../../providers/llm/llm-factory';
-import { ChatMessage } from '../../providers/interfaces/llm.interface';
-import { getSystemPrompt, getUserPrompt } from '@src/prompts/content-ranker.prompt';
-import { RankResult } from '../interfaces/content-ranker.interface';
-import { ConfigManager } from '@src/utils/config/config-manager';
+import { RetryUtil } from "@src/utils/retry.util.ts";
+import { ScrapedContent } from "@src/modules/interfaces/scraper.interface.ts";
+import { LLMFactory } from "@src/providers/llm/llm-factory.ts";
+import { ChatMessage } from "@src/providers/interfaces/llm.interface.ts";
+import { getSystemPrompt, getUserPrompt } from "@src/prompts/content-ranker.prompt.ts";
+import { RankResult } from "@src/modules/interfaces/content-ranker.interface.ts";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
 
 
 export class ContentRanker {

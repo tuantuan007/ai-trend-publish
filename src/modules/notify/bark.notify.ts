@@ -1,6 +1,6 @@
-import axios from "axios";
-import { ConfigManager } from "../../utils/config/config-manager";
-import {INotifier, Level} from "../interfaces/notify.interface";
+import axios from "npm:axios";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { INotifier, Level } from "@src/modules/interfaces/notify.interface.ts";
 
 
 export class BarkNotifier implements INotifier{

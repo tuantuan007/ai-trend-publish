@@ -1,8 +1,8 @@
-import cron from "node-cron";
-import { WeixinWorkflow } from "../services/weixin-article.workflow";
-import { Workflow } from "../services/interfaces/workflow.interface";
-import { WeixinAIBenchWorkflow } from "../services/weixin-aibench.workflow";
-import { WeixinHelloGithubWorkflow } from "../services/weixin-hellogithub.workflow";
+import cron from "npm:node-cron";
+import { WeixinWorkflow } from "@src/services/weixin-article.workflow.ts";
+import { Workflow } from "@src/services/interfaces/workflow.interface.ts";
+import { WeixinAIBenchWorkflow } from "@src/services/weixin-aibench.workflow.ts";
+import { WeixinHelloGithubWorkflow } from "@src/services/weixin-hellogithub.workflow.ts";
 
 // 工作流映射表，用于存储不同日期对应的工作流
 const workflowMap = new Map<number, Workflow>();

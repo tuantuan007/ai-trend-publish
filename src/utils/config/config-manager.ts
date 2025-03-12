@@ -1,7 +1,8 @@
-import { IConfigSource } from "./interfaces/config-source.interface";
-import { DbConfigSource } from "./sources/db-config.source";
-import { EnvConfigSource } from "./sources/env-config.source";
-import { MySQLDB } from "../db/mysql.db";
+import { IConfigSource } from "./interfaces/config-source.interface.ts";
+import { DbConfigSource } from "./sources/db-config.source.ts";
+import { EnvConfigSource } from "./sources/env-config.source.ts";
+import { MySQLDB } from "../db/mysql.db.ts";
+import process from "node:process";
 export class ConfigurationError extends Error {
   constructor(message: string) {
     super(message);

@@ -1,5 +1,5 @@
-import { ScrapedContent } from './scraper.interface';
-import { LLMProviderType } from '@src/providers/interfaces/llm.interface';
+import { ScrapedContent } from "@src/modules/interfaces/scraper.interface.ts";
+import { LLMProviderType } from "@src/providers/interfaces/llm.interface.ts";
 
 export interface RankResult {
   id: string;

@@ -1,4 +1,5 @@
-import { BaseImageGenerator } from "./base.image-generator";
+import { BaseImageGenerator } from "@src/providers/image-gen/base.image-generator.ts";
+import { Buffer } from "node:buffer";
 
 export interface PDD920LogoOptions {
     text: string;

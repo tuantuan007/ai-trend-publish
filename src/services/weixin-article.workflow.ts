@@ -1,23 +1,21 @@
-import { DeepseekAPI } from "../api/deepseek.api";
-import { getCronSources } from "@src/data-sources/getCronSources";
-import { ContentRanker } from "@src/modules/content-rank/ai.content-ranker";
-import { RankResult } from "@src/modules/interfaces/content-ranker.interface";
-import { ContentPublisher } from "@src/modules/interfaces/publisher.interface";
-import { ContentScraper, ScrapedContent } from "@src/modules/interfaces/scraper.interface";
-import { ContentSummarizer } from "@src/modules/interfaces/summarizer.interface";
-import { BarkNotifier } from "@src/modules/notify/bark.notify";
-import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher";
-import { WeixinTemplate } from "@src/modules/render/interfaces/article.type";
-import { WeixinArticleTemplateRenderer } from "@src/modules/render";
-import { FireCrawlScraper } from "@src/modules/scrapers/fireCrawl.scraper";
-import { TwitterScraper } from "@src/modules/scrapers/twitter.scraper";
-import { AISummarizer } from "@src/modules/summarizer/ai.summarizer";
-import { AliWanX21ImageGenerator } from "@src/providers/image-gen/aliyun/aliwanx2.1.image";
-import cliProgress from "cli-progress";
-import { ImageGeneratorFactory } from "@src/providers/image-gen/image-generator-factory";
-import { WeixinImageProcessor } from "@src/utils/image/image-processor";
-import { log } from "console";
-import { ConfigManager } from "@src/utils/config/config-manager";
+import { DeepseekAPI } from "@src/api/deepseek.api.ts";
+import { getCronSources } from "@src/data-sources/getCronSources.ts";
+import { ContentRanker } from "@src/modules/content-rank/ai.content-ranker.ts";
+import { RankResult } from "@src/modules/interfaces/content-ranker.interface.ts";
+import { ContentPublisher } from "@src/modules/interfaces/publisher.interface.ts";
+import { ContentScraper, ScrapedContent } from "@src/modules/interfaces/scraper.interface.ts";
+import { ContentSummarizer } from "@src/modules/interfaces/summarizer.interface.ts";
+import { BarkNotifier } from "@src/modules/notify/bark.notify.ts";
+import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher.ts";
+import { WeixinTemplate } from "@src/modules/render/interfaces/article.type.ts";
+import { FireCrawlScraper } from "@src/modules/scrapers/fireCrawl.scraper.ts";
+import { TwitterScraper } from "@src/modules/scrapers/twitter.scraper.ts";
+import { AISummarizer } from "@src/modules/summarizer/ai.summarizer.ts";
+import cliProgress from "npm:cli-progress";
+import { ImageGeneratorFactory } from "@src/providers/image-gen/image-generator-factory.ts";
+import { WeixinImageProcessor } from "@src/utils/image/image-processor.ts";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { WeixinArticleTemplateRenderer } from "@src/modules/render/article.renderer.ts";
 
 export class WeixinWorkflow {
   private scraper: Map<string, ContentScraper>;
@@ -27,7 +25,6 @@ export class WeixinWorkflow {
   private renderer: WeixinArticleTemplateRenderer;
   private deepSeekClient: DeepseekAPI;
   private contentRanker: ContentRanker;
-  private imageProcessor: WeixinImageProcessor;
   private stats = {
     success: 0,
     failed: 0,
@@ -44,7 +41,6 @@ export class WeixinWorkflow {
     this.renderer = new WeixinArticleTemplateRenderer();
     this.deepSeekClient = new DeepseekAPI();
     this.contentRanker = new ContentRanker();
-    this.imageProcessor = new WeixinImageProcessor(this.publisher as WeixinPublisher);
   }
 
 
@@ -202,7 +198,7 @@ export class WeixinWorkflow {
       summaryProgress.start(topContents.length, 0);
 
       // 批量处理内容
-      const batchSize = 1;
+      const batchSize = 10;
       for (let i = 0; i < topContents.length; i += batchSize) {
         const batch = topContents.slice(i, i + batchSize);
         await Promise.all(
