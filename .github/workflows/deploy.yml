@@ -62,9 +62,22 @@ jobs:
             if ! command -v deno &> /dev/null; then
               echo "Installing Deno..."
               curl -fsSL https://deno.land/x/install/install.sh | sh
+
+              # 配置环境变量到多个配置文件以确保在不同情况下都能生效
               echo "export DENO_INSTALL=\"\$HOME/.deno\"" >> ~/.bashrc
               echo "export PATH=\"\$DENO_INSTALL/bin:\$PATH\"" >> ~/.bashrc
-              source ~/.bashrc
+
+              echo "export DENO_INSTALL=\"\$HOME/.deno\"" >> ~/.profile
+              echo "export PATH=\"\$DENO_INSTALL/bin:\$PATH\"" >> ~/.profile
+
+              # 创建 .bash_profile 如果不存在
+              touch ~/.bash_profile
+              echo "export DENO_INSTALL=\"\$HOME/.deno\"" >> ~/.bash_profile
+              echo "export PATH=\"\$DENO_INSTALL/bin:\$PATH\"" >> ~/.bash_profile
+
+              # 立即设置环境变量
+              export DENO_INSTALL="$HOME/.deno"
+              export PATH="$DENO_INSTALL/bin:$PATH"
             else
               echo "Deno is already installed"
               deno --version
@@ -76,7 +89,7 @@ jobs:
           echo "Testing SSH connection..."
           echo "Server: ${{ secrets.SERVER_HOST }}"
           echo "User: ${{ secrets.SERVER_USER }}"
-          ssh -i ~/.ssh/id_rsa "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" "source ~/.bashrc && deno --version && echo 'SSH connection successful'"
+          ssh -i ~/.ssh/id_rsa "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" "export PATH=\"\$HOME/.deno/bin:\$PATH\" && deno --version && echo 'SSH connection successful'"
 
       - name: Package Files # 打包文件
         run: |
@@ -90,7 +103,7 @@ jobs:
       - name: Deploy on Server # 在服务器上部署
         run: |
           ssh -i ~/.ssh/id_rsa "${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}" "cd ~/app && \
-            source ~/.bashrc && \
+            export PATH=\"\$HOME/.deno/bin:\$PATH\" && \
             tar -xzf build.tar.gz && \
             pkill -f 'trend-finder' || true && \
             nohup ./dist/trend-finder --allow-env --allow-ffi --allow-read --allow-sys --allow-net > trend-finder.log 2>&1 & \
