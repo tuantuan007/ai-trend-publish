@@ -18,7 +18,12 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.x
+          deno-version: v2.x
+
+      - name: Update Dependencies and Generate Lock File
+        run: |
+          rm -f deno.lock
+          deno cache --reload src/test.ts
 
       - name: Create dist directory
         run: mkdir -p dist
