@@ -20,4 +20,5 @@ Deno.test("WeixinImageProcessor 应该能正确处理文章中的图片", async 
     console.log(result);
     
     // 验证结果包含必要的字段
+    assertEquals(result.results.length, 2);
 });
