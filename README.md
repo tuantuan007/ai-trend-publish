@@ -1,6 +1,56 @@
 # TrendPublish
 
-一个基于 AI 的趋势发现和内容发布系统，支持多源数据采集、智能总结和自动发布到微信公众号。
+基于 Deno
+开发的趋势发现和内容发布系统，支持多源数据采集、智能总结和自动发布到微信公众号。
+
+## 🛠 开发环境
+
+- **运行环境**: [Deno](https://deno.land/) v2.0.0 或更高版本
+- **开发语言**: TypeScript
+- **操作系统**: Windows/Linux/MacOS
+
+## 🚀 快速开始
+
+### 1. 安装 Deno
+
+Windows (PowerShell):
+
+```powershell
+irm https://deno.land/install.ps1 | iex
+```
+
+MacOS/Linux:
+
+```bash
+curl -fsSL https://deno.land/install.sh | sh
+```
+
+### 2. 克隆项目
+
+```bash
+git clone https://github.com/OpenAISpace/ai-trend-publish
+cd ai-trend-publish
+```
+
+### 3. 配置环境变量
+
+```bash
+cp .env.example .env
+# 编辑 .env 文件配置必要的环境变量
+```
+
+### 4. 开发和运行
+
+```bash
+# 开发模式（支持热重载）
+deno task start
+
+# 测试运行
+deno task test
+
+# 编译发布
+deno task build:XXX
+```
 
 > 🌰 示例公众号：**AISPACE科技空间**
 
@@ -35,51 +85,55 @@
 
 ## 📝 文章模板
 
-TrendPublish 提供了多种精美的文章模板。查看 [模板展示页面](https://openaispace.github.io/ai-trend-publish/templates.html) 了解更多详情。
+TrendPublish 提供了多种精美的文章模板。查看
+[模板展示页面](https://openaispace.github.io/ai-trend-publish/templates.html)
+了解更多详情。
 
 ## DONE
+
 - [x] 微信公众号文章发布
 - [x] 大模型每周排行榜
 - [x] 热门AI相关仓库推荐
 - [x] 添加通义千问（Qwen）支持
 - [x] 支持多模型配置（如 DEEPSEEK_MODEL="deepseek-chat|deepseek-reasoner"）
-- [x] 支持指定特定模型（如 AI_CONTENT_RANKER_LLM_PROVIDER="DEEPSEEK:deepseek-reasoner"）
+- [x] 支持指定特定模型（如
+      AI_CONTENT_RANKER_LLM_PROVIDER="DEEPSEEK:deepseek-reasoner"）
 
 ## Todo
+
 - [ ] 热门AI相关论文推荐
 - [ ] 热门AI相关工具推荐
 - [ ] FireCrawl 自动注册免费续期
 
 ## 优化项
- - [ ] 内容插入相关图片
- - [x] 内容去重
- - [ ] 降低AI率
- - [ ] 文章图片优化
- - [ ] ...
+
+- [ ] 内容插入相关图片
+- [x] 内容去重
+- [ ] 降低AI率
+- [ ] 文章图片优化
+- [ ] ...
 
 ## 进阶
- - [ ] 提供exe可视化界面
 
+- [ ] 提供exe可视化界面
 
 ## 🛠 技术栈
 
-- **运行环境**: Node.js + TypeScript
-- **AI 服务**: DeepseekAI Together 千问 万象 讯飞 
+- **运行环境**: Deno + TypeScript
+- **AI 服务**: DeepseekAI Together 千问 万象 讯飞
 - **数据源**:
   - Twitter/X API
   - FireCrawl
-- **定时任务**: node-cron
 - **模板引擎**: EJS
 - **开发工具**:
-  - nodemon (热重载)
+  - Deno
   - TypeScript
 
 ## 🚀 快速开始
 
 ### 环境要求
 
-- Node.js (v22+)
-- npm
+- Deno (v2+)
 - TypeScript
 
 ### 安装
@@ -89,14 +143,7 @@ TrendPublish 提供了多种精美的文章模板。查看 [模板展示页面](
 ```bash
 git clone https://github.com/OpenAISpace/ai-trend-publish
 ```
-
-2. 安装依赖
-
-```bash
-npm install
-```
-
-3. 配置环境变量
+2. 配置环境变量
 
 ```bash
 cp .env.example .env
@@ -198,7 +245,6 @@ X_API_BEARER_TOKEN="your_api_key"
 # 通知服务配置
 ENABLE_BARK=false
 BARK_URL="your_key"
-
 ```
 
 ## ⚠️ 配置IP白名单
@@ -221,10 +267,10 @@ BARK_URL="your_key"
 
 ```bash
 # 测试模式
-npm run test
+deno task test
 
 # 运行
-npm run start
+deno start start
 
 详细运行时间见 src\controllers\cron.ts
 ```
@@ -233,24 +279,20 @@ npm run start
 
 ### 方式一：直接部署
 
-1. 在服务器上安装 Node.js (v20+) 和 PM2
-
+1. 在服务器上安装 Deno
 ```bash
-# 安装 PM2
-npm install -g pm2
+irm https://deno.land/install.ps1 | iex
 ```
-
-2. 构建项目
-
+2. 克隆项目
 ```bash
-npm run build
+git clone https://github.com/OpenAISpace/ai-trend-publish.git
 ```
+3. 配置环境变量
 
-3. 使用 PM2 启动服务
-
+4. 启动服务
 ```bash
-pm2 start dist/index.js --name ai-trend-publish
-```
+# 方式1：通过环境变量文件运行
+deno task start
 
 ### 方式二：Docker 部署
 
@@ -299,7 +341,8 @@ docker run -d \
 
 ### 1. 了解数据结构
 
-查看 `src/modules/render/interfaces` 目录下的类型定义文件，了解各个渲染模块需要的数据结构
+查看 `src/modules/render/interfaces`
+目录下的类型定义文件，了解各个渲染模块需要的数据结构
 
 ### 2. 开发模板
 
@@ -307,7 +350,7 @@ docker run -d \
 
 ### 3. 注册模板
 
-在对应的渲染器类中注册新模板，如 `ArticleTemplateRenderer`：
+在对应的渲染器类中注册新模板，如 `WeixinArticleTemplateRenderer`：
 
 ### 4. 测试渲染效果
 
