@@ -257,6 +257,10 @@ X_API_BEARER_TOKEN="your_api_key"
 # 通知服务配置
 ENABLE_BARK=false
 BARK_URL="your_key"
+
+# 钉钉通知配置
+ENABLE_DINGDING=true                     # 是否启用钉钉通知
+DINGDING_WEBHOOK="your_webhook_url"      # 钉钉机器人的 Webhook URL
 ```
 
 ## ⚠️ 配置IP白名单

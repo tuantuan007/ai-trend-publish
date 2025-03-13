@@ -1,6 +1,9 @@
 import { INotifier, Level } from "@src/modules/interfaces/notify.interface.ts";
 import axios from "npm:axios";
 import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { Logger } from "@zilla/logger";
+
+const logger = new Logger("dingding-notify");
 
 export class DingdingNotify implements INotifier {
   private webhook?: string;
@@ -20,8 +23,10 @@ export class DingdingNotify implements INotifier {
       this.webhook = await configManager.get<string>("DINGDING_WEBHOOK").catch(
         () => undefined,
       );
+
+      logger.info("DingDing webhook:", this.webhook);
       if (!this.webhook) {
-        console.warn("DingDing webhook not configured but DingDing is enabled");
+        logger.warn("DingDing webhook not configured but DingDing is enabled");
       }
     }
   }
@@ -47,22 +52,21 @@ export class DingdingNotify implements INotifier {
     try {
       await this.refresh();
       if (!this.enabled) {
-        console.debug("DingDing notifications are disabled");
+        logger.debug("DingDing notifications are disabled");
         return false;
       }
 
       if (!this.webhook) {
-        console.warn("DingDing webhook not configured, skipping notification");
+        logger.warn("DingDing webhook not configured, skipping notification");
         return false;
       }
 
       // 构建消息内容
       const message = {
-        msgtype: "markdown",
-        markdown: {
-          title: title,
-          text: `## ${title}\n\n${content}${
-            options.url ? `\n\n[详情链接](${options.url})` : ""
+        msgtype: "text",
+        text: {
+          content: `通知：${title}\n${content}${
+            options.url ? `\n详情链接：${options.url}` : ""
           }`,
         },
         at: {
@@ -73,18 +77,23 @@ export class DingdingNotify implements INotifier {
       // 发送通知
       const response = await axios.post(this.webhook, message, {
         headers: {
+          "User-Agent": "TrendFinder/1.0.0",
           "Content-Type": "application/json",
+          "Accept": "*/*",
+          "Connection": "keep-alive",
         },
       });
+
+      logger.debug("DingDing notification response:", response.data);
 
       if (response.status === 200 && response.data.errcode === 0) {
         return true;
       }
 
-      console.error("DingDing notification failed:", response.data);
+      logger.error("DingDing notification failed:", response.data);
       return false;
     } catch (error) {
-      console.error("Error sending DingDing notification:", error);
+      logger.error("Error sending DingDing notification:", error);
       return false;
     }
   }
