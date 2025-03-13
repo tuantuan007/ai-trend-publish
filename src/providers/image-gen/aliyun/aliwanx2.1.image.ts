@@ -1,5 +1,5 @@
 import axios from "npm:axios";
-import { AliTaskResponse, BaseAliyunImageGenerator } from "@src/providers/image-gen/aliyun/base.aliyun.image-generator.ts";
+import { AliTaskResponse, AliTaskStatusResponse, BaseAliyunImageGenerator } from "@src/providers/image-gen/aliyun/base.aliyun.image-generator.ts";
 
 export interface AliWanX21Options {
   prompt: string;
@@ -26,6 +26,10 @@ export class AliWanX21ImageGenerator extends BaseAliyunImageGenerator {
           prompt,
           size,
         },
+        parameters: {
+          size,
+          n: 1,
+        },
       });
 
       const taskId = response.output.task_id;
@@ -39,4 +43,11 @@ export class AliWanX21ImageGenerator extends BaseAliyunImageGenerator {
       throw error;
     }
   }
-}
+
+  getResult(output: AliTaskStatusResponse['output']): string {
+    if (output.results && output.results.length > 0) {
+      return output.results[0].url;
+    }
+    throw new Error('任务成功但未获取到图片URL');
+  }
+} 

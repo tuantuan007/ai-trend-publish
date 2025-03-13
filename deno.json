@@ -11,7 +11,8 @@
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
-    "@src/": "./src/"
+    "@src/": "./src/",
+    "@zilla/logger": "jsr:@zilla/logger@^1.0.1"
   },
   "exclude": [
     "node_modules",

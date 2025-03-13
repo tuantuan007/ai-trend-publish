@@ -1,5 +1,9 @@
 import { BaseImageGenerator } from "@src/providers/image-gen/base.image-generator.ts";
 import axios from 'npm:axios';
+import { Logger } from "@zilla/logger"
+
+const logger = new Logger("aliyun");
+
 
 /**
  * 阿里云基础任务响应接口
@@ -17,19 +21,8 @@ export interface AliTaskResponse {
  */
 export interface AliTaskStatusResponse {
     request_id: string;
-    output: {
-        task_id: string;
-        task_status: "PENDING" | "RUNNING" | "SUCCEEDED" | "FAILED";
-        submit_time?: string;
-        scheduled_time?: string;
-        end_time?: string;
-        render_urls: string[];
-        bg_urls?: string[];
-        auxiliary_parameters?: string[];
-    };
-    usage?: {
-        image_count: number;
-    };
+    // deno-lint-ignore no-explicit-any
+    output: any;
 }
 
 /**
@@ -61,18 +54,15 @@ export abstract class BaseAliyunImageGenerator extends BaseImageGenerator {
     protected generateSeed(): number {
         return Math.floor(Math.random() * 4294967290) + 1;
     }
-
-    /**
-     * 生成图片的抽象方法，需要子类实现
-     */
-    // deno-lint-ignore no-explicit-any
-    abstract override generate(options: any): Promise<string>;
-
     /**
      * 提交任务到阿里云服务
      */
     protected async submitTask<T extends AliTaskResponse>(payload: any): Promise<T> {
         try {
+            logger.debug(`提交任务到阿里云服务: ${this.baseUrl}`, {
+                model: this.model,
+                ...payload
+            });
             const response = await axios.post<T>(
                 this.baseUrl,
                 {
@@ -87,6 +77,10 @@ export abstract class BaseAliyunImageGenerator extends BaseImageGenerator {
                     }
                 }
             );
+            logger.debug(`阿里云API调用成功: ${response.data.request_id}`, {
+                model: this.model,
+                response: response.data
+            });
             return response.data;
         } catch (error: any) {
             if (axios.isAxiosError(error)) {
@@ -101,6 +95,10 @@ export abstract class BaseAliyunImageGenerator extends BaseImageGenerator {
      */
     protected async checkTaskStatus(taskId: string): Promise<AliTaskStatusResponse['output']> {
         try {
+            logger.debug(`检查任务状态: ${taskId}`, {
+                model: this.model,
+                taskId: taskId
+            });
             const response = await axios.get<AliTaskStatusResponse>(
                 `https://dashscope.aliyuncs.com/api/v1/tasks/${taskId}`,
                 {
@@ -110,6 +108,10 @@ export abstract class BaseAliyunImageGenerator extends BaseImageGenerator {
                     }
                 }
             );
+            logger.debug(`任务状态检查成功: ${taskId}`, {
+                model: this.model,
+                response: response.data
+            });
             return response.data.output;
         } catch (error: any) {
             if (axios.isAxiosError(error)) {
@@ -118,6 +120,10 @@ export abstract class BaseAliyunImageGenerator extends BaseImageGenerator {
             throw error;
         }
     }
+    /**
+     * 获取结果
+     */
+    protected abstract getResult(output: AliTaskStatusResponse['output']): string;
 
     /**
      * 等待任务完成
@@ -133,10 +139,7 @@ export abstract class BaseAliyunImageGenerator extends BaseImageGenerator {
             const status = await this.checkTaskStatus(taskId);
 
             if (status.task_status === 'SUCCEEDED') {
-                if (status.render_urls && status.render_urls.length > 0) {
-                    return status.render_urls[0];
-                }
-                throw new Error('任务成功但未获取到图片URL');
+                return await this.getResult(status);
             }
 
             if (status.task_status === 'FAILED') {

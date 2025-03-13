@@ -1,5 +1,5 @@
 import axios from 'npm:axios';
-import { AliTaskResponse, BaseAliyunImageGenerator } from "@src/providers/image-gen/aliyun/base.aliyun.image-generator.ts";
+import { AliTaskResponse, AliTaskStatusResponse, BaseAliyunImageGenerator } from "@src/providers/image-gen/aliyun/base.aliyun.image-generator.ts";
 
 /**
  * 阿里云海报生成模型参数接口
@@ -69,6 +69,13 @@ export class AliyunWanxPosterGenerator extends BaseAliyunImageGenerator {
             }
             throw error;
         }
+    }
+
+    getResult(output: AliTaskStatusResponse['output']): string {
+        if (output.render_urls && output.render_urls.length > 0) {
+            return output.render_urls[0];
+        }
+        throw new Error('任务成功但未获取到图片URL');
     }
 
     private validateOptions(options: WanxPosterGenOptions): void {
