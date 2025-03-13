@@ -138,7 +138,7 @@ async function saveToFile(content: string, filePath: string): Promise<void> {
 
   // 写入文件
   return new Promise((resolve, reject) => {
-    fs.writeFile(filePath, content, 'utf8', (err) => {
+    fs.writeFile(filePath, content, "utf8", (err) => {
       if (err) reject(err);
       else resolve();
     });
@@ -153,7 +153,10 @@ async function main() {
     const htmlContent = await renderer.render(templateData);
 
     // 保存到文件
-    const outputPath = path.join(__dirname, "../../../temp/aibench_preview.html");
+    const outputPath = path.join(
+      __dirname,
+      "../../../temp/aibench_preview.html",
+    );
     await saveToFile(htmlContent, outputPath);
     console.log(`预览文件已生成：${outputPath}`);
 
@@ -170,7 +173,7 @@ async function main() {
       if (category.models.length > 0) {
         const topModel = category.models[0];
         console.log(
-          `${category.name}: ${topModel.name} (${topModel.score.toFixed(2)}分)`
+          `${category.name}: ${topModel.name} (${topModel.score.toFixed(2)}分)`,
         );
       }
     });

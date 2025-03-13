@@ -2,7 +2,10 @@ import { Workflow } from "@src/services/interfaces/workflow.interface.ts";
 import { LiveBenchAPI } from "@src/api/livebench.api.ts";
 import { AIBenchTemplateRenderer } from "@src/modules/render/index.ts";
 import { WeixinPublisher } from "@src/modules/publishers/weixin.publisher.ts";
-import { CategoryData, ModelScore } from "@src/modules/render/interfaces/aibench.type.ts";
+import {
+  CategoryData,
+  ModelScore,
+} from "@src/modules/render/interfaces/aibench.type.ts";
 import { BarkNotifier } from "@src/modules/notify/bark.notify.ts";
 import { ImageGeneratorFactory } from "@src/providers/image-gen/image-generator-factory.ts";
 
@@ -21,11 +24,12 @@ export class WeixinAIBenchWorkflow implements Workflow {
 
   async generateCoverImage(title: string): Promise<string> {
     // 生成封面图并获取URL
-    const imageGenerator = await ImageGeneratorFactory.getInstance().getGenerator("PDD920_LOGO");
+    const imageGenerator = await ImageGeneratorFactory.getInstance()
+      .getGenerator("PDD920_LOGO");
     const imageResult = await imageGenerator.generate({
       t: "@AISPACE科技空间",
       text: title,
-      type: "json"
+      type: "json",
     });
 
     // 由于type为json，imageResult一定是包含url的对象
@@ -37,17 +41,21 @@ export class WeixinAIBenchWorkflow implements Workflow {
       // 获取所有模型的性能数据
       const modelData = await this.liveBenchAPI.getModelPerformance();
 
-      console.log('modelData:', modelData);
+      console.log("modelData:", modelData);
 
       // 找出性能最好的模型
       const topModel = Object.entries(modelData)
-        .sort((a, b) => b[1].metrics["Global Average"] - a[1].metrics["Global Average"])[0];
+        .sort((a, b) =>
+          b[1].metrics["Global Average"] - a[1].metrics["Global Average"]
+        )[0];
       const topModelName = topModel[0];
-      const topModelOrg = topModel[1].organization || '未知机构';
+      const topModelOrg = topModel[1].organization || "未知机构";
 
       // 准备模板数据
       const templateData = {
-        title: `${topModelName}领跑！AI模型性能榜单 - ${new Date().toLocaleDateString()}`,
+        title: `${topModelName}领跑！AI模型性能榜单 - ${
+          new Date().toLocaleDateString()
+        }`,
         updateTime: new Date().toISOString(),
         categories: [] as CategoryData[],
         globalTop10: [] as ModelScore[],
@@ -65,7 +73,9 @@ export class WeixinAIBenchWorkflow implements Workflow {
       const htmlContent = await this.renderer.render(templateData);
 
       // 发布到微信公众号
-      const title = `${topModelName}领跑！${new Date().toLocaleDateString()} AI模型性能榜单`;
+      const title = `${topModelName}领跑！${
+        new Date().toLocaleDateString()
+      } AI模型性能榜单`;
       const imageTitle = `本周大模型排行 ${topModelOrg}旗下大模型登顶`;
       const imageUrl = await this.generateCoverImage(imageTitle);
       const mediaId = await this.publisher.uploadImage(imageUrl);
@@ -74,20 +84,20 @@ export class WeixinAIBenchWorkflow implements Workflow {
         htmlContent,
         title,
         title,
-        mediaId
+        mediaId,
       );
 
       // 发送通知
       console.log("publishResult:", publishResult);
       await this.notify.info(
         "AI Benchmark更新",
-        `已生成并发布最新的AI模型性能榜单\n发布状态: ${publishResult.status}`
+        `已生成并发布最新的AI模型性能榜单\n发布状态: ${publishResult.status}`,
       );
     } catch (error) {
       console.error("Error processing WeixinAIBenchWorkflow:", error);
       await this.notify.error(
         "AI Benchmark更新失败",
-        `错误: ${error instanceof Error ? error.message : String(error)}`
+        `错误: ${error instanceof Error ? error.message : String(error)}`,
       );
       throw error;
     }

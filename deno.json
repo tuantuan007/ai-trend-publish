@@ -10,6 +10,7 @@
     "build:all": "deno task build:win && deno task build:mac-x64 && deno task build:mac-arm64 && deno task build:linux-x64 && deno task build:linux-arm64"
   },
   "imports": {
+    "@deno-library/progress": "jsr:@deno-library/progress@^1.5.1",
     "@std/assert": "jsr:@std/assert@1",
     "@src/": "./src/",
     "@zilla/logger": "jsr:@zilla/logger@^1.0.1"
@@ -24,6 +25,12 @@
   "lint": {
     "exclude": [
       "src/templates"
-    ]
+    ],
+    "rules": {
+      "exclude": [
+        "no-explicit-any",
+        "require-await"
+      ]
+    }
   }
 }

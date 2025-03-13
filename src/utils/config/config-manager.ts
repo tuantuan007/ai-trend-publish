@@ -23,7 +23,7 @@ export class ConfigManager {
     delayMs: 1000,
   };
 
-  private constructor() { }
+  private constructor() {}
 
   public static getInstance(): ConfigManager {
     if (!ConfigManager.instance) {
@@ -43,13 +43,13 @@ export class ConfigManager {
   }
 
   private async delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   private async getWithRetry<T>(
     source: IConfigSource,
     key: string,
-    options: RetryOptions
+    options: RetryOptions,
   ): Promise<T | null> {
     let lastError: Error | null = null;
 
@@ -65,15 +65,17 @@ export class ConfigManager {
       }
     }
 
-    console.warn(`Failed to get config "${key}" after ${options.maxAttempts} attempts. Last error: ${lastError?.message}`);
+    console.warn(
+      `Failed to get config "${key}" after ${options.maxAttempts} attempts. Last error: ${lastError?.message}`,
+    );
     return null;
   }
   public async initDefaultConfigSources(): Promise<void> {
     // 环境变量
     this.addSource(new EnvConfigSource());
     // Database
-    if (await this.get<boolean>('ENABLE_DB')) {
-      console.log('DB enabled');
+    if (await this.get<boolean>("ENABLE_DB")) {
+      console.log("DB enabled");
       const db = await MySQLDB.getInstance({
         host: process.env.DB_HOST,
         port: Number(process.env.DB_PORT),
@@ -91,7 +93,10 @@ export class ConfigManager {
    * @param retryOptions 重试选项，可选
    * @throws {ConfigurationError} 当所有配置源都无法获取值时抛出
    */
-  public async get<T>(key: string, retryOptions?: Partial<RetryOptions>): Promise<T> {
+  public async get<T>(
+    key: string,
+    retryOptions?: Partial<RetryOptions>,
+  ): Promise<T> {
     const options = { ...this.defaultRetryOptions, ...retryOptions };
 
     for (const source of this.configSources) {
@@ -102,7 +107,7 @@ export class ConfigManager {
     }
 
     throw new ConfigurationError(
-      `Configuration key "${key}" not found in any source after ${options.maxAttempts} attempts`
+      `Configuration key "${key}" not found in any source after ${options.maxAttempts} attempts`,
     );
   }
 

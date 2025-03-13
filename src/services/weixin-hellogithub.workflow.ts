@@ -40,15 +40,19 @@ export class WeixinHelloGithubWorkflow implements Workflow {
         hotItems.slice(0, 20).map(async (item) => {
           console.log(`正在获取项目详情: ${item.title}`);
           return await this.scraper.getItemDetail(item.itemId);
-        })
+        }),
       );
 
       // 2. 生成封面图片
       console.log("2. 生成封面图片...");
       const prompt =
         "GitHub AI 开源项目精选，展示代码和人工智能的融合，使用现代科技风格，蓝色和绿色为主色调";
-      const imageGenerator = await ImageGeneratorFactory.getInstance().getGenerator("ALIWANX21");
-      const imageUrl = await imageGenerator.generate({ prompt, size: "1440*768" })
+      const imageGenerator = await ImageGeneratorFactory.getInstance()
+        .getGenerator("ALIWANX21");
+      const imageUrl = await imageGenerator.generate({
+        prompt,
+        size: "1440*768",
+      });
 
       // 上传封面图片获取 mediaId
       console.log("3. 上传封面图片...");
@@ -65,7 +69,7 @@ export class WeixinHelloGithubWorkflow implements Workflow {
         html,
         `本期精选 GitHub 热门 AI 开源项目，第一名 ${firstItem.name} 项目备受瞩目，发现最新最酷的人工智能开源工具`,
         `本期精选 GitHub 热门 AI 开源项目，第一名 ${firstItem.name} 项目备受瞩目，发现最新最酷的人工智能开源工具`,
-        mediaId
+        mediaId,
       );
 
       console.log("工作流执行完成！");

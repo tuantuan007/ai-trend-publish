@@ -1,8 +1,14 @@
-import { ContentScraper, Media, ScrapedContent, ScraperOptions } from "@src/modules/interfaces/scraper.interface.ts";
+import {
+  ContentScraper,
+  Media,
+  ScrapedContent,
+  ScraperOptions,
+} from "@src/modules/interfaces/scraper.interface.ts";
 import { ConfigManager } from "@src/utils/config/config-manager.ts";
 import { formatDate } from "@src/utils/common.ts";
+import { Logger } from "@zilla/logger";
 
-
+const logger = new Logger("twitter-scraper");
 
 export class TwitterScraper implements ContentScraper {
   private xApiBearerToken: string | undefined;
@@ -12,14 +18,13 @@ export class TwitterScraper implements ContentScraper {
 
   async refresh(): Promise<void> {
     this.xApiBearerToken = await ConfigManager.getInstance().get(
-      "X_API_BEARER_TOKEN"
+      "X_API_BEARER_TOKEN",
     );
   }
 
-
   async scrape(
     sourceId: string,
-    options?: ScraperOptions
+    options?: ScraperOptions,
   ): Promise<ScrapedContent[]> {
     await this.refresh();
     const usernameMatch = sourceId.match(/x\.com\/([^\/]+)/);
@@ -28,15 +33,16 @@ export class TwitterScraper implements ContentScraper {
     }
 
     const username = usernameMatch[1];
-    console.log(`Processing Twitter user: ${username}`);
+    logger.debug(`Processing Twitter user: ${username}`);
 
     try {
       const query = `from:${username} -filter:replies within_time:24h`;
-      const apiUrl = `https://api.twitterapi.io/twitter/tweet/advanced_search?query=${encodeURIComponent(
-        query
-      )}&queryType=Top`;
-
-      console.log(apiUrl);
+      const apiUrl =
+        `https://api.twitterapi.io/twitter/tweet/advanced_search?query=${
+          encodeURIComponent(
+            query,
+          )
+        }&queryType=Top`;
 
       const response = await fetch(apiUrl, {
         headers: {
@@ -56,7 +62,9 @@ export class TwitterScraper implements ContentScraper {
           const quotedContent = this.getQuotedContent(tweet.quoted_tweet);
           let media = this.getMediaList(tweet.extendedEntities);
           // 合并tweet和quotedContent 如果quotedContent存在，则将quotedContent的内容添加到tweet的内容中
-          const content = quotedContent ? `${tweet.text}\n\n 【QuotedContent:${quotedContent.content}】` : tweet.text;
+          const content = quotedContent
+            ? `${tweet.text}\n\n 【QuotedContent:${quotedContent.content}】`
+            : tweet.text;
           // 合并media和quotedContent的media
           if (quotedContent?.media) {
             media = [...media, ...quotedContent.media];
@@ -77,19 +85,19 @@ export class TwitterScraper implements ContentScraper {
         });
 
       if (scrapedContent.length > 0) {
-        console.log(
-          `Successfully fetched ${scrapedContent.length} tweets from ${username}`
+        logger.debug(
+          `Successfully fetched ${scrapedContent.length} tweets from ${username}`,
         );
       } else {
-        console.log(`No tweets found for ${username}`);
+        logger.debug(`No tweets found for ${username}`);
       }
 
-      console.debug("scrapedContent", JSON.stringify(scrapedContent, null, 2));
+      logger.debug("scrapedContent", JSON.stringify(scrapedContent, null, 2));
 
       return scrapedContent;
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
-      console.error(`Error fetching tweets for ${username}:`, errorMsg);
+      logger.error(`Error fetching tweets for ${username}:`, errorMsg);
       throw error;
     }
   }
@@ -111,7 +119,6 @@ export class TwitterScraper implements ContentScraper {
     return mediaList;
   }
 
-
   private getQuotedContent(quoted_tweet: any): ScrapedContent | null {
     if (quoted_tweet) {
       return {
@@ -123,7 +130,7 @@ export class TwitterScraper implements ContentScraper {
         score: 0,
         media: this.getMediaList(quoted_tweet.extendedEntities),
         metadata: {
-          platform: "twitter"
+          platform: "twitter",
         },
       };
     }

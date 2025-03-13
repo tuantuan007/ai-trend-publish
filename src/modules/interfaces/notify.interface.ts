@@ -15,6 +15,4 @@ export interface INotifier {
   info(title: string, content: string): Promise<boolean>;
 }
 
-
-export type Level = "active" | "timeSensitive" | "passive" ;
-
+export type Level = "active" | "timeSensitive" | "passive";

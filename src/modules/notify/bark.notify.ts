@@ -2,8 +2,7 @@ import axios from "npm:axios";
 import { ConfigManager } from "@src/utils/config/config-manager.ts";
 import { INotifier, Level } from "@src/modules/interfaces/notify.interface.ts";
 
-
-export class BarkNotifier implements INotifier{
+export class BarkNotifier implements INotifier {
   private barkUrl?: string;
   private enabled: boolean = false;
 
@@ -13,10 +12,14 @@ export class BarkNotifier implements INotifier{
 
   async refresh(): Promise<void> {
     const configManager = ConfigManager.getInstance();
-    this.enabled = await configManager.get<boolean>("ENABLE_BARK").catch(() => false);
+    this.enabled = await configManager.get<boolean>("ENABLE_BARK").catch(() =>
+      false
+    );
 
     if (this.enabled) {
-      this.barkUrl = await configManager.get<string>("BARK_URL").catch(() => undefined);
+      this.barkUrl = await configManager.get<string>("BARK_URL").catch(() =>
+        undefined
+      );
       if (!this.barkUrl) {
         console.warn("Bark URL not configured but Bark is enabled");
       }
@@ -38,7 +41,7 @@ export class BarkNotifier implements INotifier{
       group?: string;
       url?: string;
       isArchive?: boolean;
-    } = {}
+    } = {},
   ): Promise<boolean> {
     try {
       await this.refresh();
@@ -80,9 +83,11 @@ export class BarkNotifier implements INotifier{
 
       // 发送通知
       const response = await axios.get(
-        `${this.barkUrl}/${encodeURIComponent(title)}/${encodeURIComponent(
-          content
-        )}?${params.toString()}`
+        `${this.barkUrl}/${encodeURIComponent(title)}/${
+          encodeURIComponent(
+            content,
+          )
+        }?${params.toString()}`,
       );
 
       if (response.status === 200) {

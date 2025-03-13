@@ -6,10 +6,11 @@ import ejs from "npm:ejs";
 /**
  * HelloGithub模板渲染器
  */
-export class HelloGithubTemplateRenderer extends BaseTemplateRenderer<AIGithubItemDetail[]> {
+export class HelloGithubTemplateRenderer
+  extends BaseTemplateRenderer<AIGithubItemDetail[]> {
   constructor() {
-    super('hellogithub');
-    this.availableTemplates = ['default'];
+    super("hellogithub");
+    this.availableTemplates = ["default"];
   }
 
   /**
@@ -27,14 +28,17 @@ export class HelloGithubTemplateRenderer extends BaseTemplateRenderer<AIGithubIt
    * @param template 模板
    * @returns 渲染后的HTML
    */
-  protected async doRender(data: AIGithubItemDetail[], template: string): Promise<string> {
+  protected async doRender(
+    data: AIGithubItemDetail[],
+    template: string,
+  ): Promise<string> {
     return ejs.render(
       template,
       {
         renderDate: new Date().toLocaleDateString(),
         items: data,
       },
-      { rmWhitespace: true }
+      { rmWhitespace: true },
     );
   }
 }

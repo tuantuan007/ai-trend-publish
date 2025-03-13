@@ -5,6 +5,7 @@
 ## 配置文件结构
 
 配置文件(.env)分为三个主要部分：
+
 1. 基础服务配置 - 包含各种LLM服务和其他基础API的配置
 2. 模块功能配置 - 定义各个功能模块使用的具体服务
 3. 其他通用配置 - 包含数据库、通知等通用服务配置
@@ -22,6 +23,7 @@
 以下服务均使用OpenAI兼容的API格式，可以互相替换使用：
 
 ###### OpenAI API
+
 ```
 # OpenAI API配置
 OPENAI_BASE_URL="https://api.openai.com"  # OpenAI API基础URL
@@ -30,6 +32,7 @@ OPENAI_MODEL="gpt-3.5-turbo"             # 默认使用的模型
 ```
 
 ###### DeepseekAI API
+
 ```
 # DeepseekAI API配置 https://api-docs.deepseek.com/
 DEEPSEEK_BASE_URL="https://api.deepseek.com"  # Deepseek API基础URL
@@ -38,6 +41,7 @@ DEEPSEEK_MODEL="deepseek-chat"                # 默认使用的模型
 ```
 
 ###### 自定义LLM API（OpenAI兼容格式）
+
 ```
 # 自定义LLM API配置（需要兼容OpenAI API格式）
 CUSTOM_LLM_BASE_URL="your_api_base_url"  # 自定义LLM API基础URL
@@ -55,6 +59,7 @@ XUNFEI_API_KEY="your_api_key"  # 讯飞API密钥
 ```
 
 #### 默认LLM提供者
+
 ```
 # 默认使用的LLM提供者，可选值: OPENAI | DEEPSEEK | XUNFEI | CUSTOM
 DEFAULT_LLM_PROVIDER="DEEPSEEK"

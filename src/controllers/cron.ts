@@ -8,7 +8,6 @@ import { BarkNotifier } from "@src/modules/notify/bark.notify.ts";
 // 工作流映射表，用于存储不同日期对应的工作流
 const workflowMap = new Map<number, Workflow>();
 
-
 // 初始化工作流映射
 const initializeWorkflows = () => {
   // 周一的工作流 (1)
@@ -25,9 +24,6 @@ const initializeWorkflows = () => {
   workflowMap.set(6, new WeixinWorkflow());
 
   workflowMap.set(7, new WeixinWorkflow());
-
-
-
 };
 
 export const startCronJobs = () => {
@@ -57,6 +53,6 @@ export const startCronJobs = () => {
     },
     {
       timezone: "Asia/Shanghai",
-    }
+    },
   );
 };

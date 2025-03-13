@@ -70,7 +70,7 @@ export class TextLogoGenerator extends BaseImageGenerator {
 
   public static async saveToFile(
     options: TextLogoOptions,
-    outputPath: string
+    outputPath: string,
   ): Promise<void> {
     const generator = new TextLogoGenerator();
     const svg = await generator.generate(options);

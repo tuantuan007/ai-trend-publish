@@ -58,7 +58,7 @@ export const getTitleSystemPrompt = (): string => {
 
 export const getTitleUserPrompt = ({
   content,
-  language = "中文"
+  language = "中文",
 }: SummarizerPromptParams): string => {
   return `请为以下内容生成一个专业的${language}标题，标题应当简洁有力，能够吸引目标读者点击阅读：\n\n${content}\n\n
   要求：
@@ -66,4 +66,4 @@ export const getTitleUserPrompt = ({
   2. 包含内容中的核心关键词
   3. 使用新闻报道风格，避免营销语气
   4. 准确反映内容主旨，不夸大或误导`;
-}; 
+};

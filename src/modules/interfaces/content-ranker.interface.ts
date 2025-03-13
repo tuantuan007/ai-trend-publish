@@ -28,5 +28,8 @@ export interface ContentRanker {
    * @param batchSize 每批处理的内容数量
    * @returns 评分结果列表
    */
-  rankContentsBatch(contents: ScrapedContent[], batchSize?: number): Promise<RankResult[]>;
+  rankContentsBatch(
+    contents: ScrapedContent[],
+    batchSize?: number,
+  ): Promise<RankResult[]>;
 }

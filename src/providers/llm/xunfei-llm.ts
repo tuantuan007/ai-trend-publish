@@ -1,6 +1,10 @@
 import { ConfigManager } from "@src/utils/config/config-manager.ts";
 import { HttpClient } from "@src/utils/http/http-client.ts";
-import { ChatCompletionOptions, ChatMessage, LLMProvider } from "@src/providers/interfaces/llm.interface.ts";
+import {
+  ChatCompletionOptions,
+  ChatMessage,
+  LLMProvider,
+} from "@src/providers/interfaces/llm.interface.ts";
 
 interface XunfeiMessage {
   role: "system" | "user" | "assistant";
@@ -35,7 +39,7 @@ export class XunfeiLLM implements LLMProvider {
   private httpClient: HttpClient;
 
   constructor(
-    private configManager: ConfigManager = ConfigManager.getInstance()
+    private configManager: ConfigManager = ConfigManager.getInstance(),
   ) {
     this.httpClient = HttpClient.getInstance();
   }
@@ -51,7 +55,9 @@ export class XunfeiLLM implements LLMProvider {
     }
 
     // 检查API服务是否可用
-    const isHealthy = await this.httpClient.healthCheck("https://spark-api-open.xf-yun.com");
+    const isHealthy = await this.httpClient.healthCheck(
+      "https://spark-api-open.xf-yun.com",
+    );
     if (!isHealthy) {
       console.warn("警告: 讯飞API服务健康检查失败，可能无法正常访问");
     }
@@ -65,41 +71,46 @@ export class XunfeiLLM implements LLMProvider {
    */
   async createChatCompletion(
     messages: ChatMessage[],
-    options: ChatCompletionOptions = {}
+    options: ChatCompletionOptions = {},
   ): Promise<any> {
     try {
-      const xunfeiMessages: XunfeiMessage[] = messages.map(msg => ({
+      const xunfeiMessages: XunfeiMessage[] = messages.map((msg) => ({
         role: msg.role,
-        content: msg.content
+        content: msg.content,
       }));
 
-      const enableWebSearch = options.stream === undefined ? false : options.stream;
+      const enableWebSearch = options.stream === undefined
+        ? false
+        : options.stream;
 
-      const response = await this.httpClient.request<XunfeiResponse>(this.baseURL, {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${this.token}`
-        },
-        body: JSON.stringify({
-          model: this.defaultModel,
-          messages: xunfeiMessages,
-          stream: false,
-          ...(enableWebSearch && {
-            tools: [
-              {
-                type: "web_search",
-                web_search: {
-                  enable: true,
+      const response = await this.httpClient.request<XunfeiResponse>(
+        this.baseURL,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.token}`,
+          },
+          body: JSON.stringify({
+            model: this.defaultModel,
+            messages: xunfeiMessages,
+            stream: false,
+            ...(enableWebSearch && {
+              tools: [
+                {
+                  type: "web_search",
+                  web_search: {
+                    enable: true,
+                  },
                 },
-              },
-            ],
+              ],
+            }),
           }),
-        }),
-        timeout: 60000, // 60秒超时
-        retries: 3,     // 最多重试3次
-        retryDelay: 1000 // 重试间隔1秒
-      });
+          timeout: 60000, // 60秒超时
+          retries: 3, // 最多重试3次
+          retryDelay: 1000, // 重试间隔1秒
+        },
+      );
 
       if (response.code !== 0) {
         throw new Error(`API错误: ${response.message}`);
@@ -115,15 +126,15 @@ export class XunfeiLLM implements LLMProvider {
         object: "chat.completion",
         created: Date.now(),
         model: this.defaultModel,
-        choices: response.choices.map(choice => ({
+        choices: response.choices.map((choice) => ({
           index: choice.index,
           message: {
             role: choice.message.role,
-            content: choice.message.content
+            content: choice.message.content,
           },
-          finish_reason: "stop"
+          finish_reason: "stop",
         })),
-        usage: response.usage
+        usage: response.usage,
       };
     } catch (error) {
       throw new Error(`创建聊天完成失败: ${(error as Error).message}`);
@@ -140,10 +151,10 @@ export class XunfeiLLM implements LLMProvider {
   async sendMessage(
     content: string,
     systemPrompt?: string,
-    enableWebSearch?: boolean
+    enableWebSearch?: boolean,
   ): Promise<string> {
     const messages: ChatMessage[] = [];
-    
+
     if (systemPrompt) {
       messages.push({
         role: "system",
@@ -157,7 +168,7 @@ export class XunfeiLLM implements LLMProvider {
     });
 
     const response = await this.createChatCompletion(messages, {
-      stream: enableWebSearch
+      stream: enableWebSearch,
     });
 
     return response.choices[0].message.content;

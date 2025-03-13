@@ -2,10 +2,15 @@ import { RetryUtil } from "@src/utils/retry.util.ts";
 import { ScrapedContent } from "@src/modules/interfaces/scraper.interface.ts";
 import { LLMFactory } from "@src/providers/llm/llm-factory.ts";
 import { ChatMessage } from "@src/providers/interfaces/llm.interface.ts";
-import { getSystemPrompt, getUserPrompt } from "@src/prompts/content-ranker.prompt.ts";
+import {
+  getSystemPrompt,
+  getUserPrompt,
+} from "@src/prompts/content-ranker.prompt.ts";
 import { RankResult } from "@src/modules/interfaces/content-ranker.interface.ts";
 import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { Logger } from "@zilla/logger";
 
+const logger = new Logger("ai-content-ranker");
 
 export class ContentRanker {
   private llmFactory: LLMFactory;
@@ -14,9 +19,11 @@ export class ContentRanker {
   constructor() {
     this.llmFactory = LLMFactory.getInstance();
     this.configInstance = ConfigManager.getInstance();
-    this.configInstance.get("AI_CONTENT_RANKER_LLM_PROVIDER").then((provider) => {
-      console.log(`Ranker当前使用的LLM模型: ${provider}`);
-    });
+    this.configInstance.get("AI_CONTENT_RANKER_LLM_PROVIDER").then(
+      (provider) => {
+        logger.info(`Ranker当前使用的LLM模型: ${provider}`);
+      },
+    );
   }
 
   public async rankContents(contents: ScrapedContent[]): Promise<RankResult[]> {
@@ -26,10 +33,12 @@ export class ContentRanker {
 
     return RetryUtil.retryOperation(
       async () => {
-        const llmProvider = await this.llmFactory.getLLMProvider(await this.configInstance.get("AI_CONTENT_RANKER_LLM_PROVIDER"));
+        const llmProvider = await this.llmFactory.getLLMProvider(
+          await this.configInstance.get("AI_CONTENT_RANKER_LLM_PROVIDER"),
+        );
         const messages: ChatMessage[] = [
           { role: "system", content: getSystemPrompt() },
-          { role: "user", content: getUserPrompt(contents) }
+          { role: "user", content: getUserPrompt(contents) },
         ];
 
         const response = await llmProvider.createChatCompletion(messages);
@@ -40,13 +49,13 @@ export class ContentRanker {
         }
 
         return parseRankingResult(result);
-      }
+      },
     );
   }
 
   public async rankContentsBatch(
     contents: ScrapedContent[],
-    batchSize: number = 5
+    batchSize: number = 5,
   ): Promise<RankResult[]> {
     const results: RankResult[] = [];
 
@@ -56,7 +65,7 @@ export class ContentRanker {
       results.push(...batchResults);
 
       if (i + batchSize < contents.length) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
 
@@ -64,13 +73,10 @@ export class ContentRanker {
   }
 }
 
-
-
-
 function parseRankingResult(result: string): RankResult[] {
-  const lines = result.trim().split('\n');
-  return lines.map(line => {
-    const cleanedLine = line.replace(/文章ID[:：]?/i, '').trim();
+  const lines = result.trim().split("\n");
+  return lines.map((line) => {
+    const cleanedLine = line.replace(/文章ID[:：]?/i, "").trim();
     const match = cleanedLine.match(/^(\S+)(?:[\s:：]+(\d+(?:\.\d+)?)$)/);
 
     if (!match) {
@@ -85,11 +91,8 @@ function parseRankingResult(result: string): RankResult[] {
     }
 
     // 清理ID末尾的冒号
-    const cleanedId = id.replace(/[:：]$/, '');
+    const cleanedId = id.replace(/[:：]$/, "");
 
     return { id: cleanedId, score };
   });
 }
-
-
-

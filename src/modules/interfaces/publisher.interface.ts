@@ -1,5 +1,4 @@
 export interface ContentPublisher {
-
   // 上传图片到指定平台
   uploadImage(imageUrl: string): Promise<string>;
 
