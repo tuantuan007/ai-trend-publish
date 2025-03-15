@@ -1,5 +1,5 @@
 import cron from "npm:node-cron";
-import { WeixinWorkflow } from "@src/services/weixin-article.workflow.ts";
+import { WeixinArticleWorkflow } from "@src/services/weixin-article.workflow.ts";
 import { Workflow } from "@src/services/interfaces/workflow.interface.ts";
 import { WeixinAIBenchWorkflow } from "@src/services/weixin-aibench.workflow.ts";
 import { WeixinHelloGithubWorkflow } from "@src/services/weixin-hellogithub.workflow.ts";
@@ -11,19 +11,19 @@ const workflowMap = new Map<number, Workflow>();
 // 初始化工作流映射
 const initializeWorkflows = () => {
   // 周一的工作流 (1)
-  workflowMap.set(1, new WeixinWorkflow());
+  workflowMap.set(1, new WeixinArticleWorkflow());
   // 其他日期的工作流可以在这里添加
   workflowMap.set(2, new WeixinAIBenchWorkflow()); // 周二
   // workflowMap.set(3, new AnotherWorkflow()); // 周三
   workflowMap.set(3, new WeixinHelloGithubWorkflow()); // 周三
 
-  workflowMap.set(4, new WeixinWorkflow());
+  workflowMap.set(4, new WeixinArticleWorkflow());
 
-  workflowMap.set(5, new WeixinWorkflow());
+  workflowMap.set(5, new WeixinArticleWorkflow());
 
-  workflowMap.set(6, new WeixinWorkflow());
+  workflowMap.set(6, new WeixinArticleWorkflow());
 
-  workflowMap.set(7, new WeixinWorkflow());
+  workflowMap.set(7, new WeixinArticleWorkflow());
 };
 
 export const startCronJobs = () => {
