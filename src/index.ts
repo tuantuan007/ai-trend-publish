@@ -1,5 +1,5 @@
-import { startCronJobs } from "./controllers/cron";
-import { ConfigManager } from "./utils/config/config-manager";
+import { startCronJobs } from "./controllers/cron.ts";
+import { ConfigManager } from "./utils/config/config-manager.ts";
 
 async function bootstrap() {
   const configManager = ConfigManager.getInstance();

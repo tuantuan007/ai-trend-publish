@@ -1,7 +1,11 @@
-import { IConfigSource } from "../interfaces/config-source.interface";
+import { IConfigSource } from "../interfaces/config-source.interface.ts";
+import dotenv from "npm:dotenv";
+import process from "node:process";
 
 export class EnvConfigSource implements IConfigSource {
-  constructor(public priority: number = 100) {}
+  constructor(public priority: number = 100) {
+    dotenv.config();
+  }
 
   async get<T>(key: string): Promise<T | null> {
     const value = process.env[key];

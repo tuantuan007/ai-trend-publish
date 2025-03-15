@@ -1,6 +1,5 @@
-import { ConfigManager } from "../utils/config/config-manager";
-import { EnvConfigSource } from "../utils/config/sources/env-config.source";
-import { MySQLDB } from "../utils/db/mysql.db";
+import { ConfigManager } from "@src/utils/config/config-manager.ts";
+import { MySQLDB } from "@src/utils/db/mysql.db.ts";
 
 export type NewsType = "AI" | "Tech" | "Crypto" | "All";
 export type NewsPlatform = "firecrawl" | "twitter";
@@ -99,7 +98,7 @@ export const getCronSources = async (): Promise<SourceConfig> => {
         database: await configManager.get("DB_DATABASE"),
       });
       dbSources = await mysql.query<CronSource>(
-        "SELECT * FROM cron_sources"
+        "SELECT * FROM cron_sources",
       );
     }
 
@@ -120,7 +119,7 @@ export const getCronSources = async (): Promise<SourceConfig> => {
           const platform = mergedSources[newsTypeKey][platformKey];
           // 检查是否已存在相同的identifier
           const exists = platform.some(
-            (item) => item.identifier === identifier
+            (item) => item.identifier === identifier,
           );
           if (!exists) {
             platform.push({ identifier });

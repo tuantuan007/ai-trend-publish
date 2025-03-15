@@ -1,7 +1,7 @@
 import ejs from "ejs";
 import fs from "fs";
 import path from "path";
-import { HelloGithubScraper } from "../scrapers/hellogithub.scraper";
+import { HelloGithubScraper } from "@src/modules/scrapers/hellogithub.scraper.ts";
 
 async function testTemplate() {
   try {
@@ -9,13 +9,13 @@ async function testTemplate() {
     const scraper = new HelloGithubScraper();
     const hotItems = await scraper.getHotItems(1);
     const items = await Promise.all(
-      hotItems.slice(0, 5).map((item) => scraper.getItemDetail(item.itemId))
+      hotItems.slice(0, 5).map((item) => scraper.getItemDetail(item.itemId)),
     );
 
     // 2. 读取模板
     const templatePath = path.join(
       __dirname,
-      "../templates/hellogithub-weixin.ejs"
+      "../templates/hellogithub-weixin.ejs",
     );
     const template = fs.readFileSync(templatePath, "utf-8");
 
@@ -25,7 +25,7 @@ async function testTemplate() {
     // 4. 保存结果
     const outputPath = path.join(
       __dirname,
-      "../../output/hellogithub-weixin.html"
+      "../../output/hellogithub-weixin.html",
     );
     fs.writeFileSync(outputPath, html, "utf-8");
 

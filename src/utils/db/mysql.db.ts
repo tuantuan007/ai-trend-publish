@@ -1,4 +1,4 @@
-import mysql, { Pool, PoolConnection, PoolOptions } from "mysql2/promise";
+import mysql, { Pool, PoolConnection, PoolOptions } from "npm:mysql2/promise";
 
 export class MySQLDB {
   private static instance: MySQLDB;
@@ -27,7 +27,7 @@ export class MySQLDB {
       }
     } else if (!MySQLDB.instance) {
       throw new Error(
-        "MySQL configuration is required for first initialization"
+        "MySQL configuration is required for first initialization",
       );
     }
     return MySQLDB.instance;
@@ -63,7 +63,7 @@ export class MySQLDB {
    */
   public async queryOne<T = any>(
     sql: string,
-    params?: any[]
+    params?: any[],
   ): Promise<T | null> {
     const results = await this.query<T>(sql, params);
     return results.length > 0 ? results[0] : null;
@@ -77,13 +77,15 @@ export class MySQLDB {
    */
   public async insert(
     table: string,
-    data: Record<string, any>
+    data: Record<string, any>,
   ): Promise<number> {
     const keys = Object.keys(data);
     const values = Object.values(data);
-    const sql = `INSERT INTO ${table} (${keys.join(", ")}) VALUES (${keys
-      .map(() => "?")
-      .join(", ")})`;
+    const sql = `INSERT INTO ${table} (${keys.join(", ")}) VALUES (${
+      keys
+        .map(() => "?")
+        .join(", ")
+    })`;
 
     let connection: PoolConnection | null = null;
     try {
@@ -109,7 +111,7 @@ export class MySQLDB {
   public async update(
     table: string,
     data: Record<string, any>,
-    where: Record<string, any>
+    where: Record<string, any>,
   ): Promise<number> {
     const setClause = Object.keys(data)
       .map((key) => `${key} = ?`)
@@ -142,7 +144,7 @@ export class MySQLDB {
    */
   public async delete(
     table: string,
-    where: Record<string, any>
+    where: Record<string, any>,
   ): Promise<number> {
     const whereClause = Object.keys(where)
       .map((key) => `${key} = ?`)
@@ -184,7 +186,7 @@ export class MySQLDB {
   public async queryWithTransaction<T = any>(
     connection: PoolConnection,
     sql: string,
-    params?: any[]
+    params?: any[],
   ): Promise<T[]> {
     const [rows] = await connection.query(sql, params);
     return rows as T[];
